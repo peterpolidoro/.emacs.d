@@ -248,6 +248,10 @@ header"
 ;; delete this line when fixed
 (setq shift-select-mode nil)
 
+;; do not save customizations in init.el
+(setq custom-file "~/.emacs.d/.emacs-custom.el")
+(load custom-file)
+
 ;; Update packages manually to prevent emacs from taking a long time to
 ;; load.
 ;; M-x package-list-packages
