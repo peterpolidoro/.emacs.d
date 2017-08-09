@@ -249,8 +249,11 @@ header"
 (setq shift-select-mode nil)
 
 ;; do not save customizations in init.el
-(setq custom-file "~/.emacs.d/.emacs-custom.el")
+(defconst custom-file (expand-file-name "custom.el" user-emacs-directory))
+(unless (file-exists-p custom-file)
+  (write-region "" nil custom-file))
 (load custom-file)
+(add-hook 'kill-emacs-query-functions 'custom-prompt-customize-unsaved-options)
 
 ;; Update packages manually to prevent emacs from taking a long time to
 ;; load.
