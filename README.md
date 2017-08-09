@@ -31,7 +31,4 @@ sudo apt-get install git
 ```shell
 rm -rf ~/.emacs.d
 git clone https://github.com/peterpolidoro/.emacs.d.git ~/.emacs.d
-cd ~/.emacs.d
-git submodule init
-git submodule update
 ```
