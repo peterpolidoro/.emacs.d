@@ -253,7 +253,6 @@ header"
 (unless (file-exists-p custom-file)
   (write-region "" nil custom-file))
 (load custom-file)
-(add-hook 'kill-emacs-query-functions 'custom-prompt-customize-unsaved-options)
 
 ;; Update packages manually to prevent emacs from taking a long time to
 ;; load.
