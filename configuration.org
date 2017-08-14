@@ -76,6 +76,7 @@ Eventually remove this and switch to use-package
                            change-inner
                            projectile
                            flx-ido
+                           avy
                            )))
 
   ;; make sure to have downloaded archive description.
@@ -251,6 +252,9 @@ header"
 (unless (file-exists-p custom-file)
   (write-region "" nil custom-file))
 (load custom-file)
+
+;; avy
+(global-set-key (kbd "C-;") 'avy-goto-char-2)
 
 ;; Update packages manually to prevent emacs from taking a long time to
 ;; load.
