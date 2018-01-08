@@ -77,6 +77,7 @@ Eventually remove this and switch to use-package
                            projectile
                            flx-ido
                            avy
+			   magit
                            )))
 
   ;; make sure to have downloaded archive description.
