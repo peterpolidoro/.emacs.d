@@ -165,6 +165,7 @@ header"
   (c-set-offset 'case-label '+)
   (c-set-offset 'brace-list-open 0)
   (c-set-offset 'brace-list-intro '+)
+  (c-set-offset 'member-init-intro 0)
   (c-set-offset 'statement-case-open 0))
 (add-hook 'c-mode-common-hook 'ROS-c-mode-hook)
 
