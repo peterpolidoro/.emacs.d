@@ -53,7 +53,6 @@ Eventually remove this and switch to use-package
   (if (>= emacs-major-version 24)
       (setq package-list '(use-package
                            arduino-mode
-                           color-theme
                            js2-mode
                            matlab-mode
                            multi-web-mode
@@ -451,10 +450,9 @@ Why not?
 ** Theme
 
 #+BEGIN_SRC emacs-lisp
-(require 'color-theme)
-(color-theme-initialize)
+(load-theme 'euphoria t t)
+(enable-theme 'euphoria)
 (setq color-theme-is-global t)
-(color-theme-euphoria)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 #+END_SRC
 
