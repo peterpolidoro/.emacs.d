@@ -848,6 +848,15 @@ makes that automatic.
   ;; (global-set-key (kbd "C-x 3") 'pjp/split-window-right-and-switch)
 #+END_SRC
 
+* Custom functions
+
+#+BEGIN_SRC emacs-lisp
+(defun find-files-not-git ()
+  "Find all files in path recursively, not in .git directory."
+  (interactive)
+  (find-dired default-directory "-type f -not -path \"./.git/*\""))
+#+END_SRC
+
 * Set custom keybindings
 
 #+BEGIN_SRC emacs-lisp
