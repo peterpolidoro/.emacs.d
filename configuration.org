@@ -854,7 +854,7 @@ makes that automatic.
 (defun find-files-not-git ()
   "Find all files in path recursively, not in .git directory."
   (interactive)
-  (find-dired default-directory "-type f -not -path \"./.git/*\""))
+  (find-dired default-directory "-type f -not -path \"*/.git/*\""))
 #+END_SRC
 
 * Set custom keybindings
