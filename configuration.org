@@ -47,6 +47,9 @@ Eventually remove this and switch to use-package
                            ("marmalade" . "https://marmalade-repo.org/packages/")
                            ("org" . "http://orgmode.org/elpa/")))
 
+  (if (<= emacs-major-version 24)
+      (package-initialize))
+
   (if (>= emacs-major-version 24)
       (setq package-list '(use-package
                            arduino-mode
