@@ -52,7 +52,6 @@ Eventually remove this and switch to use-package
 
   (if (>= emacs-major-version 24)
       (setq package-list '(use-package
-                           arduino-mode
                            js2-mode
                            matlab-mode
                            multi-web-mode
@@ -76,7 +75,11 @@ Eventually remove this and switch to use-package
                            projectile
                            flx-ido
                            avy
-			   magit
+			                     magit
+                           )))
+
+  (if (>= emacs-major-version 25)
+      (cons package-list '(arduino-mode
                            )))
 
   ;; make sure to have downloaded archive description.
