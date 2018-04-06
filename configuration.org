@@ -31,6 +31,16 @@
   (sensible-defaults/yank-to-point-on-mouse-click)
   (sensible-defaults/use-all-keybindings)
   (sensible-defaults/backup-to-temp-directory)
+
+  (setq-default show-trailing-whitespace t)
+
+  (defun no-junk-please-were-unixish ()
+    (let ((coding-str (symbol-name buffer-file-coding-system)))
+      (when (string-match "-\\(?:dos\\|mac\\)$" coding-str)
+        (set-buffer-file-coding-system 'mule-utf-8-unix))))
+
+  (add-hook 'find-file-hooks 'no-junk-please-were-unixish)
+  (prefer-coding-system 'utf-8)
 #+END_SRC
 
 * Packages
