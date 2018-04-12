@@ -900,4 +900,5 @@ makes that automatic.
 (require 'change-inner)
 (global-set-key (kbd "M-i") 'change-inner)
 (global-set-key (kbd "M-o") 'change-outer)
+(setq org-descriptive-links nil)
 #+END_SRC
