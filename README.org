@@ -1,0 +1,40 @@
+#+TITLE: .emacs.d
+#+AUTHOR: Peter Polidoro
+#+EMAIL: peterpolidoro@gmail.com
+
+* Repository Information
+  - Author :: Peter Polidoro
+  - License :: BSD
+
+* Install
+
+** Linux
+*** emacs
+
+   #+BEGIN_SRC
+sudo apt-get remove emacs
+sudo apt-get autoremove
+sudo add-apt-repository ppa:ubuntu-elisp/ppa
+sudo apt-get update
+sudo apt-get install emacs-snapshot
+   #+END_SRC
+
+*** git
+
+   #+BEGIN_SRC
+sudo apt-get install git
+   #+END_SRC
+
+*** .emacs.d
+
+   #+BEGIN_SRC
+rm -rf ~/.emacs.d
+git clone https://github.com/peterpolidoro/.emacs.d.git ~/.emacs.d
+   #+END_SRC
+
+** Mac OS
+*** emacs
+
+   #+BEGIN_SRC
+brew cask install emacs
+   #+END_SRC
