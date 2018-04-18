@@ -105,6 +105,7 @@ Eventually remove this and switch to use-package
                            avy
 			                     magit
                            ox-gfm
+                           rainbow-mode
                            )))
 
   (if (>= emacs-major-version 25)
