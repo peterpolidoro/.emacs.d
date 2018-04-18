@@ -71,8 +71,8 @@ Eventually remove this and switch to use-package
   (setq package-archives '(("gnu"   . "https://raw.githubusercontent.com/d12frosted/elpa-mirror/master/gnu/")
                            ;; default gnu is sometimes broken
                            ;; ("gnu" . "https://elpa.gnu.org/packages/")
-                           ("melpa" . "https://melpa.org/packages/")
-                           ("marmalade" . "https://marmalade-repo.org/packages/")
+                           ("melpa" . "http://melpa.org/packages/")
+                           ("marmalade" . "http://marmalade-repo.org/packages/")
                            ("org" . "http://orgmode.org/elpa/")))
 
   (if (<= emacs-major-version 24)
@@ -104,6 +104,7 @@ Eventually remove this and switch to use-package
                            flx-ido
                            avy
 			                     magit
+                           ox-gfm
                            )))
 
   (if (>= emacs-major-version 25)
@@ -888,6 +889,95 @@ makes that automatic.
   (find-dired default-directory "-type f -not -path \"*/.git/*\""))
 #+END_SRC
 
+* Org mode
+** Key bindings
+
+#+BEGIN_SRC emacs-lisp
+  (global-set-key "\C-cl" 'org-store-link)
+  (global-set-key "\C-ca" 'org-agenda)
+  (global-set-key "\C-cc" 'org-capture)
+  (global-set-key "\C-cb" 'org-switchb)
+#+END_SRC
+
+** Language evaluation
+
+#+BEGIN_SRC emacs-lisp
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((shell . t)
+     (python . t)))
+#+END_SRC
+** Descriptive links
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-descriptive-links nil)
+#+END_SRC
+
+** Exporting
+*** Markdown
+
+#+BEGIN_SRC emacs-lisp
+(eval-after-load "org"
+  '(require 'ox-md nil t))
+#+END_SRC
+
+*** Github flavored markdown
+
+#+BEGIN_SRC emacs-lisp
+(eval-after-load "org"
+  '(require 'ox-gfm nil t))
+#+END_SRC
+
+*** PDF to images
+
+#+BEGIN_SRC emacs-lisp
+  (defun org-include-img-from-pdf (&rest _)
+    "Convert pdf files to image files in org-mode bracket links.
+
+      # ()convertfrompdf:t # This is a special comment; tells that the upcoming
+                           # link points to the to-be-converted-to file.
+      # If you have a foo.pdf that you need to convert to foo.png, use the
+      # foo.png file name in the link.
+      [[./foo.png]]
+  "
+    (interactive)
+    (if (executable-find "convert")
+        (save-excursion
+          (goto-char (point-min))
+          (while (re-search-forward "^[ \t]*#\\s-+()convertfrompdf\\s-*:\\s-*t"
+                                    nil :noerror)
+            ;; Keep on going to the next line till it finds a line with bracketed
+            ;; file link.
+            (while (progn
+                     (forward-line 1)
+                     (not (looking-at org-bracket-link-regexp))))
+            ;; Get the sub-group 1 match, the link, from `org-bracket-link-regexp'
+            (let ((link (match-string-no-properties 1)))
+              (when (stringp link)
+                (let* ((imgfile (expand-file-name link))
+                       (pdffile (expand-file-name
+                                 (concat (file-name-sans-extension imgfile)
+                                         "." "pdf")))
+                       (cmd (concat "convert -density 96 -quality 85 "
+                                    pdffile " " imgfile)))
+                  (when (and (file-readable-p pdffile)
+                             (file-newer-than-file-p pdffile imgfile))
+                    ;; This block is executed only if pdffile is newer than
+                    ;; imgfile or if imgfile does not exist.
+                    (shell-command cmd)
+                    (message "%s" cmd)))))))
+      (user-error "`convert' executable (part of Imagemagick) is not found")))
+
+  ;; (defun my/org-include-img-from-pdf-before-save ()
+  ;;   "Execute `org-include-img-from-pdf' just before saving the file."
+  ;;     (add-hook 'before-save-hook #'org-include-img-from-pdf nil :local))
+  ;; (add-hook 'org-mode-hook #'my/org-include-img-from-pdf-before-save)
+
+  ;; If you want to attempt to auto-convert PDF to PNG  only during exports, and not during each save.
+  (with-eval-after-load 'ox
+    (add-hook 'org-export-before-processing-hook #'org-include-img-from-pdf))
+#+END_SRC
+
 * Set custom keybindings
 
 #+BEGIN_SRC emacs-lisp
@@ -900,5 +990,4 @@ makes that automatic.
 (require 'change-inner)
 (global-set-key (kbd "M-i") 'change-inner)
 (global-set-key (kbd "M-o") 'change-outer)
-(setq org-descriptive-links nil)
 #+END_SRC
