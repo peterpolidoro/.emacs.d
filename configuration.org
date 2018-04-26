@@ -915,6 +915,13 @@ makes that automatic.
 #+END_SRC
 
 ** Exporting
+*** Org
+
+#+BEGIN_SRC emacs-lisp
+(eval-after-load "org"
+  '(require 'ox-org nil t))
+#+END_SRC
+
 *** Markdown
 
 #+BEGIN_SRC emacs-lisp
