@@ -75,8 +75,7 @@ Eventually remove this and switch to use-package
                            ("marmalade" . "http://marmalade-repo.org/packages/")
                            ("org" . "http://orgmode.org/elpa/")))
 
-  (if (<= emacs-major-version 24)
-      (package-initialize))
+  (unless package--initialized (package-initialize t))
 
   (if (>= emacs-major-version 24)
       (setq package-list '(use-package
