@@ -889,6 +889,54 @@
       (find-dired default-directory "-type f -not -path \"*/.git/*\""))
   #+END_SRC
 
+  #+BEGIN_SRC emacs-lisp
+    (load "term")
+    (defun replace-all (string to-find to-replace)
+      (let ((index  (cl-search to-find string))
+            (pos    0)
+            (result ""))
+        (while index
+          (setq result (concat result
+                               (substring string pos index)
+                               to-replace)
+                pos    (+ index (length to-find))
+                index  (cl-search to-find string :start2 pos)))
+        (concat result (substring string pos))))
+
+    (defun serial-process-filter-lf (process output)
+      "Replace LF in output string with CR+LF."
+      (term-emulate-terminal process
+                             (replace-all output
+                                          (byte-to-string ?\n)
+                                          (string ?\r ?\n))))
+
+    (defun serial-term-lf (port)
+      "Basically duplicate SERIAL-TERM from term.el but with process
+      filtering to translate LF to CR+LF."
+      (interactive (list (serial-read-name)))
+      (serial-supported-or-barf)
+      (let* ((process (make-serial-process
+                       :port port
+                       :speed 115200
+                       :bytesize 8
+                       :parity nil
+                       :stopbits 1
+                       :flowcontrol nil
+                       :coding 'raw-text-unix
+                       :noquery t
+                       :name (format "Lua:%s" port)
+                       :filter 'serial-process-filter-lf
+                       :sentinel 'term-sentinel))
+             (buffer (process-buffer process)))
+        (with-current-buffer buffer
+          (term-mode)
+          (term-line-mode)
+          (goto-char (point-max))
+          (set-marker (process-mark process) (point)))
+        (switch-to-buffer buffer)
+        buffer))
+  #+END_SRC
+
 * Org mode
 ** Key bindings
 
