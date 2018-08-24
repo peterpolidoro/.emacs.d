@@ -1,4 +1,4 @@
-#+TITLE: Emacs Configuration
++TITLE: Emacs Configuration
 #+AUTHOR: Peter Polidoro
 #+EMAIL: peterpolidoro@gmail.com
 #+OPTIONS: toc:nil num:nil
@@ -883,10 +883,10 @@
 * Custom functions
 
   #+BEGIN_SRC emacs-lisp
-    (defun find-files-not-git ()
-      "Find all files in path recursively, not in .git directory."
+    (defun find-text-files ()
+      "Find all text files in path recursively, not in .git directory."
       (interactive)
-      (find-dired default-directory "-type f -not -path \"*/.git/*\""))
+      (find-dired default-directory "-type f -not -path \"*/.git/*\" -not -path \"*.pdf\" -not -path \"*.zip\" -not -path \"*.png\" -not -path \"*.jpg\" -not -path \"*.gif\""))
   #+END_SRC
 
   #+BEGIN_SRC emacs-lisp
