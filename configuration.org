@@ -197,6 +197,7 @@
       (c-set-offset 'case-label '+)
       (c-set-offset 'brace-list-open 0)
       (c-set-offset 'brace-list-intro '+)
+      (c-set-offset 'brace-list-entry 0)
       (c-set-offset 'member-init-intro 0)
       (c-set-offset 'statement-case-open 0)
       (c-set-offset 'arglist-intro '+)
