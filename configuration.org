@@ -959,7 +959,7 @@
       "Run COMMAND on marked files. Any files not already open will be opened.
     After this command has been run, any buffers it's modified will remain
     open and unsaved."
-      (interactive "Run on marked files M-x ")
+      (interactive "CRun on marked files M-x ")
       (save-window-excursion
         (mapc (lambda (filename)
                 (find-file filename)
