@@ -968,6 +968,11 @@
               (dired-get-marked-files))))
   #+END_SRC
 
+  #+BEGIN_SRC emacs-lisp
+    (fset 'omd
+          (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item '([24 6 6 return 19 115 114 99 return return 14 67108896 5 2 2 134217847 return 24 51 24 111 24 6 4 16 return 19 25 return return 24 111 24 50 24 111 24 6 6 return return 134217788 19 67 111 110 115 116 97 110 116 115 46 104 return return 24 51 24 111 24 6 6 return 18 67 111 110 115 116 97 110 116 115 46 99 112 112 return return 24 111 24 50 24 111 24 6 6 return 18 53 120 51 46 104 return return 24 51 24 50 24 111 24 6 6 return 18 53 120 51 46 99 112 112 return return 24 111 24 50 24 6 6 return 18 51 120 50 46 104 return return 24 111 24 6 6 return 18 51 120 50 46 99 112 112 return return] 0 "%d") arg)))
+  #+END_SRC
+
 * Org mode
 ** Key bindings
 
