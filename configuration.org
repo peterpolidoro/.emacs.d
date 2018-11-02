@@ -1,4 +1,4 @@
-+TITLE: Emacs Configuration
+#+TITLE: Emacs Configuration
 #+AUTHOR: Peter Polidoro
 #+EMAIL: peterpolidoro@gmail.com
 #+OPTIONS: toc:nil num:nil
@@ -106,6 +106,7 @@
                               ox-gfm
                               yaml-mode
                               rainbow-mode
+                              htmlize
                               )))
 
     (if (>= emacs-major-version 25)
@@ -147,7 +148,7 @@
 
     (defun file-in-directory-list-p (file dirlist)
       "Returns true if the file specified is contained within one of
-    the directories in the list. The directories must also exist."
+        the directories in the list. The directories must also exist."
       (let ((dirs (mapcar 'expand-file-name dirlist))
             (filedir (expand-file-name (file-name-directory file))))
         (and
@@ -158,7 +159,7 @@
 
     (defun buffer-standard-include-p ()
       "Returns true if the current buffer is contained within one of
-    the directories in the INCLUDE environment variable."
+        the directories in the INCLUDE environment variable."
       (and (getenv "INCLUDE")
            (file-in-directory-list-p buffer-file-name (split-string (getenv "INCLUDE") path-separator))))
 
@@ -169,7 +170,7 @@
     ;; .cc than a .h without a .c (ie. for C++ template files)
     (defun c-c++-header ()
       "sets either c-mode or c++-mode, whichever is appropriate for
-    header"
+        header"
       (interactive)
       (let ((c-file (concat (substring (buffer-file-name) 0 -1) "c")))
         (if (file-exists-p c-file)
@@ -296,6 +297,14 @@
 
     ;; avy
     (global-set-key (kbd "C-;") 'avy-goto-char-2)
+
+    ;; matlab
+    (autoload 'matlab-mode "matlab" "Matlab Editing Mode" t)
+    (add-to-list
+     'auto-mode-alist
+     '("\\.m$" . matlab-mode))
+    (setq matlab-indent-function t)
+    (setq matlab-shell-command "matlab")
 
     ;; Update packages manually to prevent emacs from taking a long time to
     ;; load.
