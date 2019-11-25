@@ -107,6 +107,7 @@
                               yaml-mode
                               rainbow-mode
                               htmlize
+                              plantuml-mode
                               )))
 
     (if (>= emacs-major-version 25)
@@ -305,6 +306,9 @@
      '("\\.m$" . matlab-mode))
     (setq matlab-indent-function t)
     (setq matlab-shell-command "matlab")
+
+    ;; plantuml-mode
+    (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
 
     ;; Update packages manually to prevent emacs from taking a long time to
     ;; load.
