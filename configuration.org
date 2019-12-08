@@ -145,7 +145,7 @@
     ;; Unfortunately many standard c++ header files have no file
     ;; extension, and so will not typically be identified by emacs as c++
     ;; files. The following code is intended to solve this problem.
-    (require 'cl)
+    ;; (require 'cl)
 
     (defun file-in-directory-list-p (file dirlist)
       "Returns true if the file specified is contained within one of
