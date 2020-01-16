@@ -108,6 +108,7 @@
                               rainbow-mode
                               htmlize
                               plantuml-mode
+                              cmake-mode
                               )))
 
     (if (>= emacs-major-version 25)
@@ -130,190 +131,194 @@
   Eventually switch over to use-package, but for now...
 
   #+BEGIN_SRC emacs-lisp
-    ;; nXML
-    (eval-after-load "auto-complete-nxml"
-      '(progn
-         (add-to-list 'auto-mode-alist '("\\.pt\\'" . nxml-mode))))
+       ;; nXML
+       (eval-after-load "auto-complete-nxml"
+         '(progn
+            (add-to-list 'auto-mode-alist '("\\.pt\\'" . nxml-mode))))
 
-    (setq auto-mode-alist (cons '("\.cl$" . c-mode) auto-mode-alist))
+       (setq auto-mode-alist (cons '("\.cl$" . c-mode) auto-mode-alist))
 
-    (autoload 'markdown-mode "markdown-mode"
-      "Major mode for editing Markdown files" t)
-    (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
-    (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+       (autoload 'markdown-mode "markdown-mode"
+         "Major mode for editing Markdown files" t)
+       (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+       (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
-    ;; Unfortunately many standard c++ header files have no file
-    ;; extension, and so will not typically be identified by emacs as c++
-    ;; files. The following code is intended to solve this problem.
-    ;; (require 'cl)
+       ;; Unfortunately many standard c++ header files have no file
+       ;; extension, and so will not typically be identified by emacs as c++
+       ;; files. The following code is intended to solve this problem.
+       ;; (require 'cl)
 
-    (defun file-in-directory-list-p (file dirlist)
-      "Returns true if the file specified is contained within one of
-        the directories in the list. The directories must also exist."
-      (let ((dirs (mapcar 'expand-file-name dirlist))
-            (filedir (expand-file-name (file-name-directory file))))
-        (and
-         (file-directory-p filedir)
-         (member-if (lambda (x) ; Check directory prefix matches
-                      (string-match (substring x 0 (min(length filedir) (length x))) filedir))
-                    dirs))))
+       (defun file-in-directory-list-p (file dirlist)
+         "Returns true if the file specified is contained within one of
+           the directories in the list. The directories must also exist."
+         (let ((dirs (mapcar 'expand-file-name dirlist))
+               (filedir (expand-file-name (file-name-directory file))))
+           (and
+            (file-directory-p filedir)
+            (member-if (lambda (x) ; Check directory prefix matches
+                         (string-match (substring x 0 (min(length filedir) (length x))) filedir))
+                       dirs))))
 
-    (defun buffer-standard-include-p ()
-      "Returns true if the current buffer is contained within one of
-        the directories in the INCLUDE environment variable."
-      (and (getenv "INCLUDE")
-           (file-in-directory-list-p buffer-file-name (split-string (getenv "INCLUDE") path-separator))))
+       (defun buffer-standard-include-p ()
+         "Returns true if the current buffer is contained within one of
+           the directories in the INCLUDE environment variable."
+         (and (getenv "INCLUDE")
+              (file-in-directory-list-p buffer-file-name (split-string (getenv "INCLUDE") path-separator))))
 
-    (add-to-list 'magic-fallback-mode-alist '(buffer-standard-include-p . c++-mode))
+       (add-to-list 'magic-fallback-mode-alist '(buffer-standard-include-p . c++-mode))
 
-    ;; function decides whether .h file is C or C++ header, sets C++ by
-    ;; default because there's more chance of there being a .h without a
-    ;; .cc than a .h without a .c (ie. for C++ template files)
-    (defun c-c++-header ()
-      "sets either c-mode or c++-mode, whichever is appropriate for
-        header"
-      (interactive)
-      (let ((c-file (concat (substring (buffer-file-name) 0 -1) "c")))
-        (if (file-exists-p c-file)
-            (c-mode)
-          (c++-mode))))
-    (add-to-list 'auto-mode-alist '("\\.h\\'" . c-c++-header))
-    ;; and if that doesn't work, a function to toggle between c-mode and
-    ;; c++-mode
-    (defun c-c++-toggle ()
-      "toggles between c-mode and c++-mode"
-      (interactive)
-      (cond ((string= major-mode "c-mode")
-             (c++-mode))
-            ((string= major-mode "c++-mode")
-             (c-mode))))
+       ;; function decides whether .h file is C or C++ header, sets C++ by
+       ;; default because there's more chance of there being a .h without a
+       ;; .cc than a .h without a .c (ie. for C++ template files)
+       (defun c-c++-header ()
+         "sets either c-mode or c++-mode, whichever is appropriate for
+           header"
+         (interactive)
+         (let ((c-file (concat (substring (buffer-file-name) 0 -1) "c")))
+           (if (file-exists-p c-file)
+               (c-mode)
+             (c++-mode))))
+       (add-to-list 'auto-mode-alist '("\\.h\\'" . c-c++-header))
+       ;; and if that doesn't work, a function to toggle between c-mode and
+       ;; c++-mode
+       (defun c-c++-toggle ()
+         "toggles between c-mode and c++-mode"
+         (interactive)
+         (cond ((string= major-mode "c-mode")
+                (c++-mode))
+               ((string= major-mode "c++-mode")
+                (c-mode))))
 
-    (add-to-list 'auto-mode-alist '("\\.ino\\'" . c++-mode))
+       (add-to-list 'auto-mode-alist '("\\.ino\\'" . c++-mode))
 
-    ;; ROS style formatting
-    (defun ROS-c-mode-hook()
-      (setq c-basic-offset 2)
-      (setq indent-tabs-mode nil)
-      (c-set-offset 'substatement-open 0)
-      (c-set-offset 'innamespace 0)
-      (c-set-offset 'case-label '+)
-      (c-set-offset 'brace-list-open 0)
-      (c-set-offset 'brace-list-intro '+)
-      (c-set-offset 'brace-list-entry 0)
-      (c-set-offset 'member-init-intro 0)
-      (c-set-offset 'statement-case-open 0)
-      (c-set-offset 'arglist-intro '+)
-      (c-set-offset 'arglist-cont-nonempty '+)
-      (c-set-offset 'arglist-close '+)
-      (c-set-offset 'template-args-cont '+))
-    (add-hook 'c-mode-common-hook 'ROS-c-mode-hook)
+       ;; ROS style formatting
+       (defun ROS-c-mode-hook()
+         (setq c-basic-offset 2)
+         (setq indent-tabs-mode nil)
+         (c-set-offset 'substatement-open 0)
+         (c-set-offset 'innamespace 0)
+         (c-set-offset 'case-label '+)
+         (c-set-offset 'brace-list-open 0)
+         (c-set-offset 'brace-list-intro '+)
+         (c-set-offset 'brace-list-entry 0)
+         (c-set-offset 'member-init-intro 0)
+         (c-set-offset 'statement-case-open 0)
+         (c-set-offset 'arglist-intro '+)
+         (c-set-offset 'arglist-cont-nonempty '+)
+         (c-set-offset 'arglist-close '+)
+         (c-set-offset 'template-args-cont '+))
+       (add-hook 'c-mode-common-hook 'ROS-c-mode-hook)
 
-    (require 'autopair)
-    (autopair-global-mode)
+       (require 'autopair)
+       (autopair-global-mode)
 
-    (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-    (setq css-indent-offset 2)
+       (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+       (setq css-indent-offset 2)
 
-    (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+       (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
 
-    ;; roslaunch highlighting
-    (add-to-list 'auto-mode-alist '("\\.launch$" . xml-mode))
+       ;; roslaunch highlighting
+       (add-to-list 'auto-mode-alist '("\\.launch$" . xml-mode))
 
-    (autoload 'cuda-mode "cuda-mode.el")
-    (add-to-list 'auto-mode-alist '("\\.cu\\'" . cuda-mode))
-    (add-to-list 'auto-mode-alist '("\\.cuh\\'" . cuda-mode))
+       (autoload 'cuda-mode "cuda-mode.el")
+       (add-to-list 'auto-mode-alist '("\\.cu\\'" . cuda-mode))
+       (add-to-list 'auto-mode-alist '("\\.cuh\\'" . cuda-mode))
 
-    (require 'find-dired)
-    (setq find-ls-option '("-print0 | xargs -0 ls -ld" . "-ld"))
+       (require 'find-dired)
+       (setq find-ls-option '("-print0 | xargs -0 ls -ld" . "-ld"))
 
-    ;; autoindent
-    (define-key global-map (kbd "RET") 'newline-and-indent)
+       ;; autoindent
+       (define-key global-map (kbd "RET") 'newline-and-indent)
 
-    ;; json
-    (setq js-indent-level 2)
+       ;; json
+       (setq js-indent-level 2)
 
-    ;; json-reformat
-    (setq json-reformat:indent-width 2)
+       ;; json-reformat
+       (setq json-reformat:indent-width 2)
 
-    ;; highlight-indentation
-    (require 'highlight-indentation)
-    (add-hook 'python-mode-hook 'highlight-indentation-mode)
-    (add-hook 'js2-mode-hook 'highlight-indentation-mode)
-    (add-hook 'typescript-mode-hook 'highlight-indentation-mode)
-    (defun aj-toggle-fold ()
-      "Toggle fold all lines larger than indentation on current line"
-      (interactive)
-      (let ((col 1))
-        (save-excursion
-          (back-to-indentation)
-          (setq col (+ 1 (current-column)))
-          (set-selective-display
-           (if selective-display nil (or col 1))))))
-    (global-set-key [(M C i)] 'aj-toggle-fold)
+       ;; highlight-indentation
+       (require 'highlight-indentation)
+       (add-hook 'python-mode-hook 'highlight-indentation-mode)
+       (add-hook 'js2-mode-hook 'highlight-indentation-mode)
+       (add-hook 'typescript-mode-hook 'highlight-indentation-mode)
+       (defun aj-toggle-fold ()
+         "Toggle fold all lines larger than indentation on current line"
+         (interactive)
+         (let ((col 1))
+           (save-excursion
+             (back-to-indentation)
+             (setq col (+ 1 (current-column)))
+             (set-selective-display
+              (if selective-display nil (or col 1))))))
+       (global-set-key [(M C i)] 'aj-toggle-fold)
 
-    (custom-set-faces
-     ;; custom-set-faces was added by Custom.
-     ;; If you edit it by hand, you could mess it up, so be careful.
-     ;; Your init file should contain only one such instance.
-     ;; If there is more than one, they won't work right.
-     )
-    (custom-set-variables
-     ;; custom-set-variables was added by Custom.
-     ;; If you edit it by hand, you could mess it up, so be careful.
-     ;; Your init file should contain only one such instance.
-     ;; If there is more than one, they won't work right.
-     '(js2-basic-offset 2)
-     '(typescript-indent-level 2))
+       (custom-set-faces
+        ;; custom-set-faces was added by Custom.
+        ;; If you edit it by hand, you could mess it up, so be careful.
+        ;; Your init file should contain only one such instance.
+        ;; If there is more than one, they won't work right.
+        )
+       (custom-set-variables
+        ;; custom-set-variables was added by Custom.
+        ;; If you edit it by hand, you could mess it up, so be careful.
+        ;; Your init file should contain only one such instance.
+        ;; If there is more than one, they won't work right.
+        '(js2-basic-offset 2)
+        '(typescript-indent-level 2))
 
-    ;; enable subword-mode for all programming modes
-    ;; to make kill-word work on CamelCase.
-    (add-hook 'prog-mode-hook 'subword-mode)
+       ;; enable subword-mode for all programming modes
+       ;; to make kill-word work on CamelCase.
+       (add-hook 'prog-mode-hook 'subword-mode)
 
-    ;; auto-complete
-    (ac-config-default)
+       ;; auto-complete
+       (ac-config-default)
 
-    ;; turn on ede mode
-    (global-ede-mode 1)
+       ;; turn on ede mode
+       (global-ede-mode 1)
 
-    ;; enable ido everywhere
-    (ido-mode 1)
-    (ido-everywhere 1)
-    (flx-ido-mode 1)
-    ;; disable ido faces to see flx highlights.
-    (setq ido-enable-flex-matching t)
-    (setq ido-use-faces nil)
+       ;; enable ido everywhere
+       (ido-mode 1)
+       (ido-everywhere 1)
+       (flx-ido-mode 1)
+       ;; disable ido faces to see flx highlights.
+       (setq ido-enable-flex-matching t)
+       (setq ido-use-faces nil)
 
-    ;; projectile
-    (projectile-global-mode)
+       ;; projectile
+       (projectile-global-mode)
 
-    ;; temporary fix for region highlighting bug
-    ;; delete this line when fixed
-    (setq shift-select-mode nil)
+       ;; temporary fix for region highlighting bug
+       ;; delete this line when fixed
+       (setq shift-select-mode nil)
 
-    ;; do not save customizations in init.el
-    (defconst custom-file (expand-file-name "custom.el" user-emacs-directory))
-    (unless (file-exists-p custom-file)
-      (write-region "" nil custom-file))
-    (load custom-file)
+       ;; do not save customizations in init.el
+       (defconst custom-file (expand-file-name "custom.el" user-emacs-directory))
+       (unless (file-exists-p custom-file)
+         (write-region "" nil custom-file))
+       (load custom-file)
 
-    ;; avy
-    (global-set-key (kbd "C-;") 'avy-goto-char-2)
+       ;; avy
+       (global-set-key (kbd "C-;") 'avy-goto-char-2)
 
-    ;; matlab
-    (autoload 'matlab-mode "matlab" "Matlab Editing Mode" t)
-    (add-to-list
-     'auto-mode-alist
-     '("\\.m$" . matlab-mode))
-    (setq matlab-indent-function t)
-    (setq matlab-shell-command "matlab")
+       ;; matlab
+       (autoload 'matlab-mode "matlab" "Matlab Editing Mode" t)
+       (add-to-list
+        'auto-mode-alist
+        '("\\.m$" . matlab-mode))
+       (setq matlab-indent-function t)
+       (setq matlab-shell-command "matlab")
 
-    ;; plantuml-mode
-    (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
+       ;; plantuml-mode
+       (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
 
-    ;; Update packages manually to prevent emacs from taking a long time to
-    ;; load.
-    ;; M-x package-list-packages
-    ;; U x
+       ;; cmake-mode
+       (setq load-path (cons (expand-file-name "/dir/with/cmake-mode") load-path))
+       (require 'cmake-mode)
+
+       ;; Update packages manually to prevent emacs from taking a long time to
+       ;; load.
+       ;; M-x package-list-packages
+       ;; U x
   #+END_SRC
 
 * Configure =use-package=
