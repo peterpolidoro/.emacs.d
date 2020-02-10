@@ -499,9 +499,9 @@
 
    Why not?
 
-   #+BEGIN_SRC emacs-lisp
-     (global-prettify-symbols-mode t)
-   #+END_SRC
+   # #+BEGIN_SRC emacs-lisp
+   #   (global-prettify-symbols-mode t)
+   # #+END_SRC
 
 ** Theme
 
