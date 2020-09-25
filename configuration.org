@@ -136,12 +136,13 @@
             (add-to-list 'auto-mode-alist '("\\.pt\\'" . nxml-mode))))
 
        (setq auto-mode-alist (cons '("\.cl$" . c-mode) auto-mode-alist))
+       
+       (setq-default show-trailing-whitespace t)
 
        (autoload 'markdown-mode "markdown-mode"
          "Major mode for editing Markdown files" t)
        (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
        (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-       (add-hook 'markdown-mode-hook 'show-ws-toggle-show-trailing-whitespace)
 
        ;; Unfortunately many standard c++ header files have no file
        ;; extension, and so will not typically be identified by emacs as c++
