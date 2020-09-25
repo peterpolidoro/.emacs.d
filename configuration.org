@@ -10,7 +10,6 @@
   #+BEGIN_SRC emacs-lisp
     (load-file "~/.emacs.d/sensible-defaults.el")
     (sensible-defaults/increase-gc-threshold)
-    (sensible-defaults/delete-trailing-whitespace)
     (sensible-defaults/treat-camelcase-as-separate-words)
     (sensible-defaults/automatically-follow-symlinks)
     (sensible-defaults/make-scripts-executable)
@@ -142,6 +141,7 @@
          "Major mode for editing Markdown files" t)
        (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
        (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+       (add-hook 'markdown-mode-hook 'show-ws-toggle-show-trailing-whitespace)
 
        ;; Unfortunately many standard c++ header files have no file
        ;; extension, and so will not typically be identified by emacs as c++
