@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name : switch (...) { case : ... default: ...}
-# key: switch
-# --
-switch (${1:expr})
-{
-  $0
-}
