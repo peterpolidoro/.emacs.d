@@ -1,4 +1,4 @@
-;; NOTE: init.el is now generated from Emacs.org.  Please edit that file
+;; NOTE: init.el is generated from Emacs.org.  Please edit that file
 ;;       in Emacs and init.el will be generated automatically!
 
 ;; Initialize package sources
@@ -41,3 +41,41 @@
 	              treemacs-mode-hook
                 eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+(load-theme 'euphoria t t)
+(enable-theme 'euphoria)
+(setq color-theme-is-global t)
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+
+(use-package which-key
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 1))
+
+(use-package ivy
+  :diminish
+  :bind (("C-s" . swiper))
+  :config
+  (ivy-mode 1))
+
+(use-package ivy-rich
+  :init
+  (ivy-rich-mode 1))
+
+(use-package counsel
+  :bind (("C-M-j" . 'counsel-switch-buffer)
+         :map minibuffer-local-map
+         ("C-r" . 'counsel-minibuffer-history))
+  :config
+  (counsel-mode 1))
+
+(use-package helpful
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-key] . helpful-key))
