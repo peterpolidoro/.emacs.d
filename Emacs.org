@@ -5,10 +5,13 @@
 
 * Introduction
 
+  This file is a modification of David Wilson's awesome
+  [[https://github.com/daviwil/emacs-from-scratch]].
+
 #+begin_src emacs-lisp
 
-;; NOTE: init.el is generated from Emacs.org.  Please edit that file
-;;       in Emacs and init.el will be generated automatically!
+  ;; NOTE: init.el is generated from Emacs.org.  Please edit that file
+  ;;       in Emacs and init.el will be generated automatically!
 
 #+end_src
 
@@ -20,8 +23,8 @@
   (require 'package)
 
   (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                           ("org" . "https://orgmode.org/elpa/")
-                           ("elpa" . "https://elpa.gnu.org/packages/")))
+			   ("org" . "https://orgmode.org/elpa/")
+			   ("elpa" . "https://elpa.gnu.org/packages/")))
 
   (package-initialize)
   (unless package-archive-contents
@@ -38,11 +41,13 @@
 
 * Basic UI Configuration
 
-This section configures basic UI settings that remove unneeded elements to make Emacs look a lot more minimal and modern.  If you're just getting started in Emacs, the menu bar might be helpful so you can remove the =(menu-bar-mode -1)= line if you'd like to still see that.
+This section configures basic UI settings that remove unneeded
+elements to make Emacs look a lot more minimal and modern.  If you're
+just getting started in Emacs, the menu bar might be helpful so you
+can remove the =(menu-bar-mode -1)= line if you'd like to still see
+that.
 
 #+begin_src emacs-lisp
-
-  (setq inhibit-startup-message t)
 
   (scroll-bar-mode -1)        ; Disable visible scrollbar
   (tool-bar-mode -1)          ; Disable the toolbar
@@ -51,18 +56,15 @@ This section configures basic UI settings that remove unneeded elements to make 
 
   (menu-bar-mode -1)            ; Disable the menu bar
 
-  ;; Set up the visible bell
-  (setq visible-bell t)
-
   (column-number-mode)
   (global-display-line-numbers-mode t)
 
   ;; Disable line numbers for some modes
   (dolist (mode '(org-mode-hook
-                  term-mode-hook
-                  shell-mode-hook
-	                treemacs-mode-hook
-                  eshell-mode-hook))
+		  term-mode-hook
+		  shell-mode-hook
+			treemacs-mode-hook
+		  eshell-mode-hook))
     (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 #+end_src
@@ -73,16 +75,22 @@ This section configures basic UI settings that remove unneeded elements to make 
 
 #+begin_src emacs-lisp
 
-(load-theme 'euphoria t t)
-(enable-theme 'euphoria)
-(setq color-theme-is-global t)
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+  (load-theme 'euphoria t t)
+  (enable-theme 'euphoria)
+  (setq color-theme-is-global t)
+  (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 
 #+end_src
 
 ** Which Key
 
-[[https://github.com/justbur/emacs-which-key][which-key]] is a useful UI panel that appears when you start pressing any key binding in Emacs to offer you all possible completions for the prefix.  For example, if you press =C-c= (hold control and press the letter =c=), a panel will appear at the bottom of the frame displaying all of the bindings under that prefix and which command they run.  This is very useful for learning the possible key bindings in the mode of your current buffer.
+[[https://github.com/justbur/emacs-which-key][which-key]] is a useful UI panel that appears when you start pressing
+any key binding in Emacs to offer you all possible completions for the
+prefix.  For example, if you press =C-c= (hold control and press the
+letter =c=), a panel will appear at the bottom of the frame displaying
+all of the bindings under that prefix and which command they run.
+This is very useful for learning the possible key bindings in the mode
+of your current buffer.
 
 #+begin_src emacs-lisp
 
@@ -96,34 +104,45 @@ This section configures basic UI settings that remove unneeded elements to make 
 
 ** Ivy and Counsel
 
-[[https://oremacs.com/swiper/][Ivy]] is an excellent completion framework for Emacs.  It provides a minimal yet powerful selection menu that appears when you open files, switch buffers, and for many other tasks in Emacs.  Counsel is a customized set of commands to replace `find-file` with `counsel-find-file`, etc which provide useful commands for each of the default completion commands.
+[[https://oremacs.com/swiper/][Ivy]] is an excellent completion framework for Emacs.  It provides a
+minimal yet powerful selection menu that appears when you open files,
+switch buffers, and for many other tasks in Emacs.  Counsel is a
+customized set of commands to replace `find-file` with
+`counsel-find-file`, etc which provide useful commands for each of the
+default completion commands.
 
-[[https://github.com/Yevgnen/ivy-rich][ivy-rich]] adds extra columns to a few of the Counsel commands to provide more information about each item.
+[[https://github.com/Yevgnen/ivy-rich][ivy-rich]] adds extra columns to a few of the Counsel commands to
+provide more information about each item.
 
 #+begin_src emacs-lisp
 
-    (use-package ivy
-      :diminish
-      :bind (("C-s" . swiper))
-      :config
-      (ivy-mode 1))
+  (use-package ivy
+    :diminish
+    :bind (("C-s" . swiper))
+    :config
+    (ivy-mode 1))
 
-    (use-package ivy-rich
-      :init
-      (ivy-rich-mode 1))
+  (use-package ivy-rich
+    :init
+    (ivy-rich-mode 1))
 
-    (use-package counsel
-      :bind (("C-M-j" . 'counsel-switch-buffer)
-             :map minibuffer-local-map
-             ("C-r" . 'counsel-minibuffer-history))
-      :config
-      (counsel-mode 1))
+  (use-package counsel
+    :bind (("C-M-j" . 'counsel-switch-buffer)
+	   :map minibuffer-local-map
+	   ("C-r" . 'counsel-minibuffer-history))
+    :config
+    (counsel-mode 1))
 
 #+end_src
 
 ** Helpful Help Commands
 
-[[https://github.com/Wilfred/helpful][Helpful]] adds a lot of very helpful (get it?) information to Emacs' =describe-= command buffers.  For example, if you use =describe-function=, you will not only get the documentation about the function, you will also see the source code of the function and where it gets used in other places in the Emacs configuration.  It is very useful for figuring out how things work in Emacs.
+[[https://github.com/Wilfred/helpful][Helpful]] adds a lot of very helpful (get it?) information to Emacs'
+=describe-= command buffers.  For example, if you use
+=describe-function=, you will not only get the documentation about the
+function, you will also see the source code of the function and where
+it gets used in other places in the Emacs configuration.  It is very
+useful for figuring out how things work in Emacs.
 
 #+begin_src emacs-lisp
 
@@ -136,6 +155,34 @@ This section configures basic UI settings that remove unneeded elements to make 
     ([remap describe-command] . helpful-command)
     ([remap describe-variable] . counsel-describe-variable)
     ([remap describe-key] . helpful-key))
+
+#+end_src
+
+** Sensible Defaults
+
+#+begin_src emacs-lisp
+
+  (load-file "~/.emacs.d/sensible-defaults.el")
+  (sensible-defaults/increase-gc-threshold)
+  (sensible-defaults/treat-camelcase-as-separate-words)
+  (sensible-defaults/automatically-follow-symlinks)
+  (sensible-defaults/make-scripts-executable)
+  (sensible-defaults/single-space-after-periods)
+  (sensible-defaults/offer-to-create-parent-directories-on-save)
+  (sensible-defaults/apply-changes-to-highlighted-region)
+  (sensible-defaults/overwrite-selected-text)
+  (sensible-defaults/ensure-that-files-end-with-newline)
+  (sensible-defaults/quiet-startup)
+  (sensible-defaults/make-dired-file-sizes-human-readable)
+  (sensible-defaults/shorten-yes-or-no)
+  (sensible-defaults/always-highlight-code)
+  (sensible-defaults/refresh-buffers-when-files-change)
+  (sensible-defaults/show-matching-parens)
+  (sensible-defaults/flash-screen-instead-of-ringing-bell)
+  (sensible-defaults/set-default-line-length-to 80)
+  (sensible-defaults/yank-to-point-on-mouse-click)
+  (sensible-defaults/use-all-keybindings)
+  (sensible-defaults/backup-to-temp-directory)
 
 #+end_src
 

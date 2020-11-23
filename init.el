@@ -5,8 +5,8 @@
 (require 'package)
 
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                         ("org" . "https://orgmode.org/elpa/")
-                         ("elpa" . "https://elpa.gnu.org/packages/")))
+			 ("org" . "https://orgmode.org/elpa/")
+			 ("elpa" . "https://elpa.gnu.org/packages/")))
 
 (package-initialize)
 (unless package-archive-contents
@@ -19,8 +19,6 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-(setq inhibit-startup-message t)
-
 (scroll-bar-mode -1)        ; Disable visible scrollbar
 (tool-bar-mode -1)          ; Disable the toolbar
 (tooltip-mode -1)           ; Disable tooltips
@@ -28,18 +26,15 @@
 
 (menu-bar-mode -1)            ; Disable the menu bar
 
-;; Set up the visible bell
-(setq visible-bell t)
-
 (column-number-mode)
 (global-display-line-numbers-mode t)
 
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
-                term-mode-hook
-                shell-mode-hook
-	              treemacs-mode-hook
-                eshell-mode-hook))
+		term-mode-hook
+		shell-mode-hook
+		      treemacs-mode-hook
+		eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (load-theme 'euphoria t t)
@@ -65,8 +60,8 @@
 
 (use-package counsel
   :bind (("C-M-j" . 'counsel-switch-buffer)
-         :map minibuffer-local-map
-         ("C-r" . 'counsel-minibuffer-history))
+	 :map minibuffer-local-map
+	 ("C-r" . 'counsel-minibuffer-history))
   :config
   (counsel-mode 1))
 
@@ -79,3 +74,25 @@
   ([remap describe-command] . helpful-command)
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
+
+(load-file "~/.emacs.d/sensible-defaults.el")
+(sensible-defaults/increase-gc-threshold)
+(sensible-defaults/treat-camelcase-as-separate-words)
+(sensible-defaults/automatically-follow-symlinks)
+(sensible-defaults/make-scripts-executable)
+(sensible-defaults/single-space-after-periods)
+(sensible-defaults/offer-to-create-parent-directories-on-save)
+(sensible-defaults/apply-changes-to-highlighted-region)
+(sensible-defaults/overwrite-selected-text)
+(sensible-defaults/ensure-that-files-end-with-newline)
+(sensible-defaults/quiet-startup)
+(sensible-defaults/make-dired-file-sizes-human-readable)
+(sensible-defaults/shorten-yes-or-no)
+(sensible-defaults/always-highlight-code)
+(sensible-defaults/refresh-buffers-when-files-change)
+(sensible-defaults/show-matching-parens)
+(sensible-defaults/flash-screen-instead-of-ringing-bell)
+(sensible-defaults/set-default-line-length-to 80)
+(sensible-defaults/yank-to-point-on-mouse-click)
+(sensible-defaults/use-all-keybindings)
+(sensible-defaults/backup-to-temp-directory)
