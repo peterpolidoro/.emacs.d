@@ -1,50 +1,46 @@
-#+title: Emacs From Scratch
+#+TITLE: .emacs.d
+#+AUTHOR: Peter Polidoro
+#+EMAIL: peterpolidoro@gmail.com
 
-This is an example of a fully custom Emacs configuration that you can use as inspiration when building your own!
+* Repository Information
+  - Author :: Peter Polidoro
+  - License :: BSD
 
-We're developing this configuration live on YouTube, subscribe to [[https://www.youtube.com/c/SystemCrafters?sub_confirmation=1][System Crafters]] (make sure to click the bell!) so that you're notified of future streams.
+* Install
 
-If you're enjoying the videos and benefitting from the examples in this repo, please *consider [[https://github.com/sponsors/daviwil][becoming a sponsor]]* to support the development of future content!
+** Linux
 
-* Episodes
+*** emacs
 
-This repo now contains configuration from multiple series on the channel!
+    #+BEGIN_SRC
+sudo apt-get remove emacs
+sudo apt-get autoremove
+sudo add-apt-repository ppa:ubuntu-elisp/ppa
+sudo apt-get update
+sudo apt-get install emacs-snapshot
+    #+END_SRC
 
-** [[https://www.youtube.com/playlist?list=PLEoMzSkcN8oPH1au7H6B7bBJ4ZO7BXjSZ][Emacs From Scratch]]
+*** git
 
-Here is a list of all the episode videos with links to the configuration we built for each one:
+    #+BEGIN_SRC
+sudo apt-get install git
+    #+END_SRC
 
-1. [[https://www.youtube.com/watch?v=74zOY-vgkyw][Live-Coding a Custom Emacs Configuration from Scratch]] ([[https://github.com/daviwil/emacs-from-scratch/tree/c0266ff684f670ecc5e41615c0282912e6615214][Code]])
-2. [[https://www.youtube.com/watch?v=IspAZtNTslY][Adding Helpful UI Improvements]] ([[https://github.com/daviwil/emacs-from-scratch/tree/43c0401355c7971cb4491690ee4b8449505a5d58][Code]])
-3. [[https://www.youtube.com/watch?v=xaZMwNELaJY][Key Bindings and Evil]] ([[https://github.com/daviwil/emacs-from-scratch/tree/29e542c79632853d85124019e47506cc0571cd05][Code]])
-4. [[https://youtu.be/INTu30BHZGk][Projectile and Magit]] ([[https://github.com/daviwil/emacs-from-scratch/tree/500370fa06889dad313e60473d73090fcfbe106d][Code]])
-5. [[https://www.youtube.com/watch?v=VcgjTEa0kU4][Org Mode Basics]] ([[https://github.com/daviwil/emacs-from-scratch/tree/1a13fcf0dd6afb41fce71bf93c5571931999fed8][Code]])
-6. [[https://youtu.be/PNE-mgkZ6HM][Organizing Your Life with Org Mode]] ([[https://github.com/daviwil/emacs-from-scratch/tree/c55d0f5e309f7ed8ffa3c00bc35c75937a5184e4][Code]])
-7. [[https://youtu.be/kkqVTDbfYp4][Configure Everything with Org Babel]] ([[https://github.com/daviwil/emacs-from-scratch/tree/9388cf6ecd9b44c430867a5c3dad5f050fdc0ee1][Code]])
-8. [[https://youtu.be/E-NAM9U5JYE][Build Your Own IDE with lsp-mode]] ([[https://github.com/daviwil/emacs-from-scratch/tree/6d078217a41134cc667f969430d150c50d03f448][Code]])
-9. [[https://youtu.be/wa_wZIuT9Vw][Learn to Love the Terminal Modes]] ([[https://github.com/daviwil/emacs-from-scratch/tree/bbfbc77b3afab0c14149e07d0ab08d275d4ba575][Code]])
-10. [[https://youtu.be/PMWwM8QJAtU][Effortless File Management with Dired]] ([[https://github.com/daviwil/emacs-from-scratch/blob/8c302a79bf5700f6ef0279a3daeeb4123ae8bd59/Emacs.org#dired][Code]])
+*** .emacs.d
 
-** [[https://www.youtube.com/playlist?list=PLEoMzSkcN8oNPbEMYEtswOVTvq7CVddCS][Emacs Desktop Environment]]
+    #+BEGIN_SRC
+rm -rf ~/.emacs.d
+git clone https://github.com/peterpolidoro/.emacs.d.git ~/.emacs.d
+    #+END_SRC
 
-1. [[https://www.youtube.com/watch?v=f7xB2fFk1tQ][Getting Started with EXWM]] ([[https://github.com/daviwil/emacs-from-scratch/blob/219c060e1bd695948c7691955a12a5dcaf3a9530/Emacs.org#window-management][Code]], [[file:show-notes/Emacs-Desktop-01.org][Notes]])
+** Mac OS
+*** emacs
 
-* Usage Instructions
+    #+BEGIN_SRC
+brew cask install emacs
+    #+END_SRC
 
-*IMPORTANT:* Be sure to read the commentary in [[file:Emacs.org][Emacs.org]] in case anything unexpected happens when you load this configuration.  Feel free to [[https://github.com/daviwil/runemacs/issues][file an issue]] to discuss any questions or problems you have so we can discuss it in a future stream!
-
-*Linux and macOS*
-
-On Linux, Emacs can be found in every major Linux distribution's package manager.  On macOS you can install Emacs using [[https://brew.sh/][Homebrew]] via =brew install emacs=.
-
-You can easily get started with this configuration on Linux and macOS by following these steps:
-
-1. Clone this repository to a folder on your system: =git clone https://github.com/daviwil/emacs-from-scratch=
-2. Back up any existing Emacs configuration you may already have in your home directory in the =.emacs.d= folder (you could try moving it to =.emacs.d-old=)
-3. Rename the directory for the clone of this repo to =~/.emacs.d=.
-4. Start Emacs!
-
-*Windows*
+** Windows
 
 You can download the latest Emacs version (27.1 at the time of this writing) for Windows by heading to the [[https://ftp.gnu.org/gnu/emacs/windows/emacs-27/][GNU FTP site]].  Downloading and running the [[https://ftp.gnu.org/gnu/emacs/windows/emacs-27/emacs-27.1-x86_64-installer.exe][installer package]] will likely be the easiest way to get started.  You can also [[https://chocolatey.org/packages/Emacs][install Emacs via Chocolatey]] if you prefer a more automated approach.
 
@@ -60,8 +56,6 @@ For most modern Windows versions (Windows 7+), these steps should work:
 ** Installing the Fira Code Font
 
 This configuration uses the [[https://github.com/tonsky/FiraCode][Fira Code]] font by [[https://github.com/tonsky][@tonsky]] and installation instructions can be found on [[https://github.com/tonsky/FiraCode/wiki/Installing][this wiki page]].
-
-However, since this is meant to be /your/ configuration, feel free to choose your own font!
 
 * Recommendations
 
