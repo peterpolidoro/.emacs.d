@@ -14,11 +14,19 @@
 
     #+BEGIN_SRC sh
 
-      sudo apt-get remove emacs
-      sudo apt-get autoremove
+      sudo apt remove emacs
+      sudo apt autoremove
       sudo add-apt-repository ppa:ubuntu-elisp/ppa
-      sudo apt-get update
-      sudo apt-get install emacs-snapshot
+      sudo apt update
+      sudo apt install emacs-snapshot
+    #+END_SRC
+
+*** emacs
+
+    #+BEGIN_SRC sh
+
+      sudo apt install fonts-firacode
+      sudo apt install fonts-cantarell
 
     #+END_SRC
 
@@ -26,7 +34,7 @@
 
     #+BEGIN_SRC sh
 
-      sudo apt-get install git
+      sudo apt install git
 
     #+END_SRC
 

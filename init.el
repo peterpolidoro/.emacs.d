@@ -24,6 +24,10 @@
 	(expand-file-name (format "emacs-custom-%s.el" (user-uid)) temporary-file-directory)))
 (load custom-file t)
 
+;; You will most likely need to adjust this font size for your system!
+(defvar pjp/default-font-size 120)
+(defvar pjp/default-variable-font-size 120)
+
 ;; Initialize package sources
 (require 'package)
 
@@ -60,6 +64,14 @@
 		      treemacs-mode-hook
 		eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+(set-face-attribute 'default nil :font "Fira Code Retina" :height pjp/default-font-size)
+
+;; Set the fixed pitch face
+(set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height pjp/default-font-size)
+
+;; Set the variable pitch face
+(set-face-attribute 'variable-pitch nil :font "Cantarell" :height pjp/default-variable-font-size :weight 'regular)
 
 (load-theme 'euphoria t t)
 (enable-theme 'euphoria)
