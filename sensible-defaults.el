@@ -47,10 +47,10 @@ directory."
   (setq default-directory "~/"))
 
 (defun sensible-defaults/increase-gc-threshold ()
-  "Allow 20MB of memory (instead of 0.76MB) before calling
+  "Allow 50MB of memory (instead of 0.76MB) before calling
 garbage collection. This means GC runs less often, which speeds
 up some operations."
-  (setq gc-cons-threshold 20000000))
+  (setq gc-cons-threshold (* 50 1000 1000)))
 
 (defun sensible-defaults/delete-trailing-whitespace ()
   "Call DELETE-TRAILING-WHITESPACE every time a buffer is saved."
