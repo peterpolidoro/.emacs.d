@@ -6,6 +6,8 @@
   - Author :: Peter Polidoro
   - License :: BSD
 
+  DEPRECATED Use [[dotfiles][https://github.com/peterpolidoro/dotfiles]] repository instead.
+
 * Install
 
 ** Linux
