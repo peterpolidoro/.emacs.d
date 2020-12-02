@@ -13,6 +13,10 @@
 			      (time-subtract after-init-time before-init-time)))
 		     gcs-done)))
 
+;;(require 'loadhist)
+;;(file-dependents (feature-file 'cl))
+(setq byte-compile-warnings '(cl-functions))
+
 ;; Keep transient cruft out of ~/.emacs.d/
 (setq user-emacs-directory "~/.cache/emacs/"
       backup-directory-alist `(("." . ,(expand-file-name "backups" user-emacs-directory)))
@@ -90,8 +94,8 @@
 
 ;; Enable line numbers for some modes
 (dolist (mode '(text-mode-hook
-                prog-mode-hook
-                conf-mode-hook))
+		prog-mode-hook
+		conf-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 1))))
 
 ;; Override some modes which derive from the above
@@ -103,6 +107,10 @@
 (setq vc-follow-symlinks t)
 
 (setq ad-redefinition-action 'accept)
+
+(setq kill-whole-line t)
+
+(setq-default fill-column 80)
 
 (load-theme 'euphoria t t)
 (enable-theme 'euphoria)
@@ -123,12 +131,12 @@
 
 (defun pjp/replace-unicode-font-mapping (block-name old-font new-font)
   (let* ((block-idx (cl-position-if
-                         (lambda (i) (string-equal (car i) block-name))
-                         unicode-fonts-block-font-mapping))
-         (block-fonts (cadr (nth block-idx unicode-fonts-block-font-mapping)))
-         (updated-block (cl-substitute new-font old-font block-fonts :test 'string-equal)))
+		     (lambda (i) (string-equal (car i) block-name))
+		     unicode-fonts-block-font-mapping))
+	 (block-fonts (cadr (nth block-idx unicode-fonts-block-font-mapping)))
+	 (updated-block (cl-substitute new-font old-font block-fonts :test 'string-equal)))
     (setf (cdr (nth block-idx unicode-fonts-block-font-mapping))
-          `(,updated-block))))
+	  `(,updated-block))))
 
 (use-package unicode-fonts
   :custom
@@ -136,12 +144,12 @@
   :config
   ;; Fix the font mappings to use the right emoji font
   (mapcar
-    (lambda (block-name)
-      (pjp/replace-unicode-font-mapping block-name "Apple Color Emoji" "Noto Color Emoji"))
-    '("Dingbats"
-      "Emoticons"
-      "Miscellaneous Symbols and Pictographs"
-      "Transport and Map Symbols"))
+   (lambda (block-name)
+     (pjp/replace-unicode-font-mapping block-name "Apple Color Emoji" "Noto Color Emoji"))
+   '("Dingbats"
+     "Emoticons"
+     "Miscellaneous Symbols and Pictographs"
+     "Transport and Map Symbols"))
   (unicode-fonts-setup))
 
 (use-package emojify
@@ -173,11 +181,11 @@
   (show-paren-mode 1))
 
 (setq display-time-world-list
-  '(("America/Los_Angeles" "California")
-    ("America/New_York" "New York")
-    ("Europe/Athens" "Athens")
-    ("Pacific/Auckland" "Auckland")
-    ("Asia/Shanghai" "Shanghai")))
+      '(("America/Los_Angeles" "California")
+	("America/New_York" "New York")
+	("Europe/Athens" "Athens")
+	("Pacific/Auckland" "Auckland")
+	("Asia/Shanghai" "Shanghai")))
 (setq display-time-world-time-format "%a, %d %b %I:%M %p %Z")
 
 ;; Set default connection mode to SSH
@@ -254,34 +262,87 @@
 				  (right-fringe . 8)))
   (ivy-posframe-mode 1))
 
-(use-package helpful
-  :custom
-  (counsel-describe-function-function #'helpful-callable)
-  (counsel-describe-variable-function #'helpful-variable)
-  :bind
-  ([remap describe-function] . counsel-describe-function)
-  ([remap describe-command] . helpful-command)
-  ([remap describe-variable] . counsel-describe-variable)
-  ([remap describe-key] . helpful-key))
+(use-package avy
+  :commands (avy-goto-char avy-goto-word-0 avy-goto-line))
 
-(load-file "~/.emacs.d/sensible-defaults.el")
-(sensible-defaults/increase-gc-threshold)
-(sensible-defaults/treat-camelcase-as-separate-words)
-(sensible-defaults/automatically-follow-symlinks)
-(sensible-defaults/make-scripts-executable)
-(sensible-defaults/single-space-after-periods)
-(sensible-defaults/offer-to-create-parent-directories-on-save)
-(sensible-defaults/apply-changes-to-highlighted-region)
-(sensible-defaults/overwrite-selected-text)
-(sensible-defaults/ensure-that-files-end-with-newline)
-(sensible-defaults/quiet-startup)
-(sensible-defaults/make-dired-file-sizes-human-readable)
-(sensible-defaults/shorten-yes-or-no)
-(sensible-defaults/always-highlight-code)
-(sensible-defaults/refresh-buffers-when-files-change)
-(sensible-defaults/show-matching-parens)
-(sensible-defaults/flash-screen-instead-of-ringing-bell)
-(sensible-defaults/set-default-line-length-to 80)
-(sensible-defaults/yank-to-point-on-mouse-click)
-(sensible-defaults/use-all-keybindings)
-(sensible-defaults/backup-to-temp-directory)
+(use-package avy
+  :bind (("C-:" . avy-goto-char)
+	 ("C-;" . avy-goto-char-2)
+	 ("M-g f" . avy-goto-line)
+	 ("M-g w" . avy-goto-word-1)
+	 ("M-g e" . avy-goto-word-0)))
+
+(use-package expand-region
+  :bind (("M-[" . er/expand-region)
+	 ("C-(" . er/mark-outside-pairs)))
+
+;; Turn on indentation and auto-fill mode for Org files
+(defun pjp/org-mode-setup ()
+  (variable-pitch-mode 1)
+  (auto-fill-mode 0)
+  (visual-line-mode 1))
+
+(use-package org
+  :defer t
+  :hook (org-mode . pjp/org-mode-setup)
+  :config
+  (setq org-src-fontify-natively t
+	org-src-tab-acts-natively t
+	org-edit-src-content-indentation 2
+	org-hide-block-startup nil
+	org-src-preserve-indentation nil
+	org-startup-folded 'content
+	org-cycle-separator-lines 2)
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (ledger . t)))
+
+  ;; NOTE: Subsequent sections are still part of this use-package block!
+
+;; Since we don't want to disable org-confirm-babel-evaluate all
+;; of the time, do it around the after-save-hook
+(defun pjp/org-babel-tangle-dont-ask ()
+  ;; Dynamic scoping to the rescue
+  (let ((org-confirm-babel-evaluate nil))
+    (org-babel-tangle)))
+
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'pjp/org-babel-tangle-dont-ask
+					      'run-at-end 'only-in-org-mode)))
+
+(dolist (face '((org-level-1 . 1.2)
+		(org-level-2 . 1.1)
+		(org-level-3 . 1.05)
+		(org-level-4 . 1.0)
+		(org-level-5 . 1.1)
+		(org-level-6 . 1.1)
+		(org-level-7 . 1.1)
+		(org-level-8 . 1.1)))
+  (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+
+;; Make sure org-indent face is available
+(require 'org-indent)
+
+;; Ensure that anything that should be fixed-pitch in Org files appears that way
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+
+;; This is needed as of Org 9.2
+(require 'org-tempo)
+
+(add-to-list 'org-structure-template-alist '("sh" . "src sh"))
+(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+(add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
+(add-to-list 'org-structure-template-alist '("ts" . "src typescript"))
+(add-to-list 'org-structure-template-alist '("py" . "src python"))
+(add-to-list 'org-structure-template-alist '("yaml" . "src yaml"))
+(add-to-list 'org-structure-template-alist '("json" . "src json"))
+
+;; This ends the use-package org-mode block
+)
