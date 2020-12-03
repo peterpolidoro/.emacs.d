@@ -85,8 +85,8 @@
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 (setq scroll-step 1)
 
-(set-frame-parameter (selected-frame) 'alpha '(90 . 90))
-(add-to-list 'default-frame-alist '(alpha . (90 . 90)))
+(set-frame-parameter (selected-frame) 'alpha '(95 . 95))
+(add-to-list 'default-frame-alist '(alpha . (95 . 95)))
 (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
@@ -346,3 +346,186 @@
 
 ;; This ends the use-package org-mode block
 )
+
+(use-package magit
+  :commands (magit-status magit-get-current-branch)
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+;; Add a super-convenient global binding for magit-status since
+;; I use it 8 million times a day
+(global-set-key (kbd "C-M-;") 'magit-status)
+
+(use-package forge
+  :disabled)
+
+(use-package magit-todos
+  :defer t)
+
+(use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  (when (file-directory-p "~/git")
+    (setq projectile-project-search-path '("~/git")))
+  (setq projectile-switch-project-action #'projectile-dired))
+
+(use-package counsel-projectile
+  :after projectile)
+
+
+
+(use-package ivy-xref
+  :init (if (< emacs-major-version 27)
+	    (setq xref-show-xrefs-function #'ivy-xref-show-xrefs)
+	  (setq xref-show-definitions-function #'ivy-xref-show-defs)))
+
+(use-package lsp-mode
+  :commands lsp
+  :hook ((typescript-mode js2-mode web-mode) . lsp)
+  :bind (:map lsp-mode-map
+	      ("TAB" . completion-at-point)))
+
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :config
+  (setq lsp-ui-sideline-enable t)
+  (setq lsp-ui-sideline-show-hover nil)
+  (setq lsp-ui-doc-position 'bottom)
+  (lsp-ui-doc-show))
+
+;; (use-package dap-mode
+;;   :ensure t
+;;   :hook (lsp-mode . dap-mode)
+;;   :config
+;;   (dap-ui-mode 1)
+;;   (dap-tooltip-mode 1)
+;;   (require 'dap-node)
+;;   (dap-node-setup)
+
+;;   (dap-register-debug-template "Node: Attach"
+;;     (list :type "node"
+;;           :cwd nil
+;;           :request "attach"
+;;           :program nil
+;;           :port 9229
+;;           :name "Node::Run")))
+
+(use-package lispy
+  :hook ((emacs-lisp-mode . lispy-mode)
+	 (scheme-mode . lispy-mode)))
+
+(use-package lispyville
+  :disabled
+  :hook ((lispy-mode . lispyville-mode))
+  :config
+  (lispyville-set-key-theme '(operators c-w additional)))
+
+(use-package nvm
+  :defer t)
+
+(use-package typescript-mode
+  :mode "\\.ts\\'"
+  :config
+  (setq typescript-indent-level 2))
+
+(defun pjp/set-js-indentation ()
+  (setq js-indent-level 2)
+  (setq-default tab-width 2))
+
+(use-package js2-mode
+  :mode "\\.jsx?\\'"
+  :config
+  ;; Use js2-mode for Node scripts
+  (add-to-list 'magic-mode-alist '("#!/usr/bin/env node" . js2-mode))
+
+  ;; Don't use built-in syntax checking
+  (setq js2-mode-show-strict-warnings nil)
+
+  ;; Set up proper indentation in JavaScript and JSON files
+  (add-hook 'js2-mode-hook #'pjp/set-js-indentation)
+  (add-hook 'json-mode-hook #'pjp/set-js-indentation))
+
+(use-package prettier-js
+  :hook ((js2-mode . prettier-js-mode)
+	 (typescript-mode . prettier-js-mode))
+  :config
+  (setq prettier-js-show-errors nil))
+
+(use-package ccls
+  :hook ((c-mode c++-mode objc-mode cuda-mode) .
+	 (lambda () (require 'ccls) (lsp))))
+
+(add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
+
+(use-package helpful
+  :ensure t
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-key] . helpful-key))
+
+(use-package markdown-mode
+  :pin melpa-stable
+  :mode "\\.md\\'"
+  :config
+  (setq markdown-command "marked")
+  (defun pjp/set-markdown-header-font-sizes ()
+    (dolist (face '((markdown-header-face-1 . 1.2)
+		    (markdown-header-face-2 . 1.1)
+		    (markdown-header-face-3 . 1.0)
+		    (markdown-header-face-4 . 1.0)
+		    (markdown-header-face-5 . 1.0)))
+      (set-face-attribute (car face) nil :weight 'normal :height (cdr face))))
+
+  (defun pjp/markdown-mode-hook ()
+    (pjp/set-markdown-header-font-sizes))
+
+  (add-hook 'markdown-mode-hook 'pjp/markdown-mode-hook))
+
+(use-package web-mode
+  :mode "(\\.\\(html?\\|ejs\\|tsx\\|jsx\\)\\'"
+  :config
+  (setq-default web-mode-code-indent-offset 2)
+  (setq-default web-mode-markup-indent-offset 2)
+  (setq-default web-mode-attribute-indent-offset 2))
+
+;; 1. Start the server with `httpd-start'
+;; 2. Use `impatient-mode' on any buffer
+(use-package impatient-mode
+  :ensure t)
+
+(use-package skewer-mode
+  :ensure t)
+
+(use-package yaml-mode
+  :mode "\\.ya?ml\\'")
+
+(use-package flycheck
+  :defer t
+  :hook (lsp-mode . flycheck-mode))
+
+(use-package yasnippet
+  :hook (prog-mode . yas-minor-mode)
+  :config
+  (yas-reload-all))
+
+(use-package smartparens
+  :hook (prog-mode . smartparens-mode))
+
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+(use-package rainbow-mode
+  :defer t
+  :hook (org-mode
+	 emacs-lisp-mode
+	 web-mode
+	 typescript-mode
+	 js2-mode))

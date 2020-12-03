@@ -178,8 +178,8 @@
 
    #+begin_src emacs-lisp
 
-     (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
-     (add-to-list 'default-frame-alist '(alpha . (90 . 90)))
+     (set-frame-parameter (selected-frame) 'alpha '(95 . 95))
+     (add-to-list 'default-frame-alist '(alpha . (95 . 95)))
      (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
      (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
@@ -603,35 +603,367 @@
      (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
      (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 
-#+end_src
+   #+end_src
 
 ** Block Templates
 
-These templates enable you to type things like =<el= and then hit =Tab= to expand
-the template.  More documentation can be found at the Org Mode [[https://orgmode.org/manual/Easy-templates.html][Easy Templates]]
-documentation page.
+   These templates enable you to type things like =<el= and then hit =Tab= to expand
+   the template.  More documentation can be found at the Org Mode [[https://orgmode.org/manual/Easy-templates.html][Easy Templates]]
+   documentation page.
 
-#+begin_src emacs-lisp
+   #+begin_src emacs-lisp
 
-  ;; This is needed as of Org 9.2
-  (require 'org-tempo)
+     ;; This is needed as of Org 9.2
+     (require 'org-tempo)
 
-  (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
-  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-  (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
-  (add-to-list 'org-structure-template-alist '("ts" . "src typescript"))
-  (add-to-list 'org-structure-template-alist '("py" . "src python"))
-  (add-to-list 'org-structure-template-alist '("yaml" . "src yaml"))
-  (add-to-list 'org-structure-template-alist '("json" . "src json"))
+     (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
+     (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+     (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
+     (add-to-list 'org-structure-template-alist '("ts" . "src typescript"))
+     (add-to-list 'org-structure-template-alist '("py" . "src python"))
+     (add-to-list 'org-structure-template-alist '("yaml" . "src yaml"))
+     (add-to-list 'org-structure-template-alist '("json" . "src json"))
 
-#+end_src
+   #+end_src
 
 ** End =use-package org-mode=
 
-#+begin_src emacs-lisp
+   #+begin_src emacs-lisp
 
-  ;; This ends the use-package org-mode block
-  )
+     ;; This ends the use-package org-mode block
+     )
 
-#+end_src
+   #+end_src
+
+* Development
+
+  Configuration for various programming languages and dev tools that I use.
+
+** Git
+
+*** Magit
+
+    https://magit.vc/manual/magit/
+
+    #+begin_src emacs-lisp
+
+      (use-package magit
+	:commands (magit-status magit-get-current-branch)
+	:custom
+	(magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+      ;; Add a super-convenient global binding for magit-status since
+      ;; I use it 8 million times a day
+      (global-set-key (kbd "C-M-;") 'magit-status)
+
+    #+end_src
+
+*** Forge
+
+    #+begin_src emacs-lisp
+
+      (use-package forge
+	:disabled)
+
+    #+end_src
+
+*** magit-todos
+
+    This is an interesting extension to Magit that shows a TODOs section in your
+    git status buffer containing all lines with TODO (or other similar words) in
+    files contained within the repo.  More information at the [[https://github.com/alphapapa/magit-todos][GitHub repo]].
+
+    #+begin_src emacs-lisp
+
+      (use-package magit-todos
+	:defer t)
+
+    #+end_src
+
+** Projectile
+
+*** Initial Setup
+
+    #+begin_src emacs-lisp
+
+      (use-package projectile
+	:diminish projectile-mode
+	:config (projectile-mode)
+	:bind-keymap
+	("C-c p" . projectile-command-map)
+	:init
+	(when (file-directory-p "~/git")
+	  (setq projectile-project-search-path '("~/git")))
+	(setq projectile-switch-project-action #'projectile-dired))
+
+      (use-package counsel-projectile
+	:after projectile)
+
+    #+end_src
+
+*** Project Configurations
+
+    This section contains project configurations for specific projects that I can't
+    drop a =.dir-locals.el= file into.  Documentation on this approach can be found in
+    the [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Directory-Local-Variables.html][Emacs manual]].
+
+    #+begin_src emacs-lisp
+
+    #+end_src
+
+** Languages
+
+*** Language Server Support
+
+    #+begin_src emacs-lisp
+
+      (use-package ivy-xref
+	:init (if (< emacs-major-version 27)
+		  (setq xref-show-xrefs-function #'ivy-xref-show-xrefs)
+		(setq xref-show-definitions-function #'ivy-xref-show-defs)))
+
+      (use-package lsp-mode
+	:commands lsp
+	:hook ((typescript-mode js2-mode web-mode) . lsp)
+	:bind (:map lsp-mode-map
+		    ("TAB" . completion-at-point)))
+
+      (use-package lsp-ui
+	:hook (lsp-mode . lsp-ui-mode)
+	:config
+	(setq lsp-ui-sideline-enable t)
+	(setq lsp-ui-sideline-show-hover nil)
+	(setq lsp-ui-doc-position 'bottom)
+	(lsp-ui-doc-show))
+
+    #+end_src
+
+*** Debug Adapter Support
+
+    Not so convinced about this yet.
+
+    #+begin_src emacs-lisp
+
+      ;; (use-package dap-mode
+      ;;   :ensure t
+      ;;   :hook (lsp-mode . dap-mode)
+      ;;   :config
+      ;;   (dap-ui-mode 1)
+      ;;   (dap-tooltip-mode 1)
+      ;;   (require 'dap-node)
+      ;;   (dap-node-setup)
+
+      ;;   (dap-register-debug-template "Node: Attach"
+      ;;     (list :type "node"
+      ;;           :cwd nil
+      ;;           :request "attach"
+      ;;           :program nil
+      ;;           :port 9229
+      ;;           :name "Node::Run")))
+
+    #+end_src
+
+*** Meta Lisp
+
+    Here are packages that are useful across different Lisp and Scheme implementations:
+
+    #+begin_src emacs-lisp
+
+      (use-package lispy
+	:hook ((emacs-lisp-mode . lispy-mode)
+	       (scheme-mode . lispy-mode)))
+
+      (use-package lispyville
+	:disabled
+	:hook ((lispy-mode . lispyville-mode))
+	:config
+	(lispyville-set-key-theme '(operators c-w additional)))
+
+    #+end_src
+
+*** TypeScript and JavaScript
+
+    Set up nvm so that we can manage Node versions
+
+    #+begin_src emacs-lisp
+
+      (use-package nvm
+	:defer t)
+
+    #+end_src
+
+    Configure TypeScript and JavaScript language modes
+
+    #+begin_src emacs-lisp
+
+      (use-package typescript-mode
+	:mode "\\.ts\\'"
+	:config
+	(setq typescript-indent-level 2))
+
+      (defun pjp/set-js-indentation ()
+	(setq js-indent-level 2)
+	(setq-default tab-width 2))
+
+      (use-package js2-mode
+	:mode "\\.jsx?\\'"
+	:config
+	;; Use js2-mode for Node scripts
+	(add-to-list 'magic-mode-alist '("#!/usr/bin/env node" . js2-mode))
+
+	;; Don't use built-in syntax checking
+	(setq js2-mode-show-strict-warnings nil)
+
+	;; Set up proper indentation in JavaScript and JSON files
+	(add-hook 'js2-mode-hook #'pjp/set-js-indentation)
+	(add-hook 'json-mode-hook #'pjp/set-js-indentation))
+
+      (use-package prettier-js
+	:hook ((js2-mode . prettier-js-mode)
+	       (typescript-mode . prettier-js-mode))
+	:config
+	(setq prettier-js-show-errors nil))
+
+    #+end_src
+
+*** C/C++
+
+    #+begin_src emacs-lisp
+
+      (use-package ccls
+	:hook ((c-mode c++-mode objc-mode cuda-mode) .
+	       (lambda () (require 'ccls) (lsp))))
+
+    #+end_src
+
+*** Emacs Lisp
+
+    #+begin_src emacs-lisp
+
+      (add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
+
+      (use-package helpful
+	:ensure t
+	:custom
+	(counsel-describe-function-function #'helpful-callable)
+	(counsel-describe-variable-function #'helpful-variable)
+	:bind
+	([remap describe-function] . counsel-describe-function)
+	([remap describe-command] . helpful-command)
+	([remap describe-variable] . counsel-describe-variable)
+	([remap describe-key] . helpful-key))
+
+    #+end_src
+
+*** Markdown
+
+    #+begin_src emacs-lisp
+
+      (use-package markdown-mode
+	:pin melpa-stable
+	:mode "\\.md\\'"
+	:config
+	(setq markdown-command "marked")
+	(defun pjp/set-markdown-header-font-sizes ()
+	  (dolist (face '((markdown-header-face-1 . 1.2)
+			  (markdown-header-face-2 . 1.1)
+			  (markdown-header-face-3 . 1.0)
+			  (markdown-header-face-4 . 1.0)
+			  (markdown-header-face-5 . 1.0)))
+	    (set-face-attribute (car face) nil :weight 'normal :height (cdr face))))
+
+	(defun pjp/markdown-mode-hook ()
+	  (pjp/set-markdown-header-font-sizes))
+
+	(add-hook 'markdown-mode-hook 'pjp/markdown-mode-hook))
+
+    #+end_src
+
+*** HTML
+
+    #+begin_src emacs-lisp
+
+      (use-package web-mode
+	:mode "(\\.\\(html?\\|ejs\\|tsx\\|jsx\\)\\'"
+	:config
+	(setq-default web-mode-code-indent-offset 2)
+	(setq-default web-mode-markup-indent-offset 2)
+	(setq-default web-mode-attribute-indent-offset 2))
+
+      ;; 1. Start the server with `httpd-start'
+      ;; 2. Use `impatient-mode' on any buffer
+      (use-package impatient-mode
+	:ensure t)
+
+      (use-package skewer-mode
+	:ensure t)
+
+    #+end_src
+
+*** YAML
+
+    #+begin_src emacs-lisp
+
+      (use-package yaml-mode
+	:mode "\\.ya?ml\\'")
+
+    #+end_src
+
+** Productivity
+
+*** Syntax checking with Flycheck
+
+    #+begin_src emacs-lisp
+
+      (use-package flycheck
+	:defer t
+	:hook (lsp-mode . flycheck-mode))
+
+    #+end_src
+
+*** Snippets
+
+    #+begin_src emacs-lisp
+
+      (use-package yasnippet
+	:hook (prog-mode . yas-minor-mode)
+	:config
+	(yas-reload-all))
+
+    #+end_src
+
+*** Smart Parens
+
+    #+begin_src emacs-lisp
+
+      (use-package smartparens
+	:hook (prog-mode . smartparens-mode))
+
+    #+end_src
+
+*** Rainbow Delimiters
+
+    #+begin_src emacs-lisp
+
+      (use-package rainbow-delimiters
+	:hook (prog-mode . rainbow-delimiters-mode))
+
+    #+end_src
+
+*** Rainbow Mode
+
+    Sets the background of HTML color strings in buffers to be the color mentioned.
+
+    #+begin_src emacs-lisp
+
+      (use-package rainbow-mode
+	:defer t
+	:hook (org-mode
+	       emacs-lisp-mode
+	       web-mode
+	       typescript-mode
+	       js2-mode))
+
+    #+end_src
+
 
