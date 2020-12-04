@@ -456,16 +456,6 @@
 ;;           :port 9229
 ;;           :name "Node::Run")))
 
-(use-package lispy
-  :hook ((emacs-lisp-mode . lispy-mode)
-	 (scheme-mode . lispy-mode)))
-
-(use-package lispyville
-  :disabled
-  :hook ((lispy-mode . lispyville-mode))
-  :config
-  (lispyville-set-key-theme '(operators c-w additional)))
-
 (use-package nvm
   :defer t)
 
