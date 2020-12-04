@@ -112,6 +112,42 @@
 
 (setq-default fill-column 80)
 
+(add-hook 'prog-mode-hook 'subword-mode)
+
+(setq vc-follow-symlinks t)
+
+(add-hook 'after-save-hook
+	  'executable-make-buffer-file-executable-if-script-p)
+
+(setq sentence-end-double-space nil)
+
+(add-hook 'before-save-hook
+	  (lambda ()
+	    (when buffer-file-name
+	      (let ((dir (file-name-directory buffer-file-name)))
+		(when (and (not (file-exists-p dir))
+			   (y-or-n-p (format "Directory %s does not exist. Create it?" dir)))
+		  (make-directory dir t))))))
+
+(transient-mark-mode t)
+
+(delete-selection-mode t)
+
+(global-auto-revert-mode t)
+
+(setq mouse-yank-at-point t)
+
+(setq require-final-newline t)
+
+(fset 'yes-or-no-p 'y-or-n-p)
+
+(setq confirm-kill-emacs 'y-or-n-p)
+
+(define-key global-map (kbd "C-+") 'text-scale-increase)
+(define-key global-map (kbd "C-=") 'text-scale-increase)
+(define-key global-map (kbd "C-_") 'text-scale-decrease)
+(define-key global-map (kbd "C--") 'text-scale-decrease)
+
 (load-theme 'euphoria t t)
 (enable-theme 'euphoria)
 (setq color-theme-is-global t)

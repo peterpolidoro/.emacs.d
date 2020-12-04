@@ -241,6 +241,122 @@
      (setq-default fill-column 80)
    #+END_SRC
 
+** Sensible Defaults
+
+*** Treat camel case as separate words
+
+   #+begin_src emacs-lisp
+
+     (add-hook 'prog-mode-hook 'subword-mode)
+
+   #+end_src
+
+*** Automatically follow symlinks
+
+   #+begin_src emacs-lisp
+     
+     (setq vc-follow-symlinks t)
+
+   #+end_src
+
+*** Make scripts executable
+
+   #+begin_src emacs-lisp
+
+     (add-hook 'after-save-hook
+	       'executable-make-buffer-file-executable-if-script-p)
+
+   #+end_src
+
+*** Single space after periods
+
+   #+begin_src emacs-lisp
+
+     (setq sentence-end-double-space nil)
+
+   #+end_src
+
+*** Offer to create parent directories on save
+
+   #+begin_src emacs-lisp
+
+     (add-hook 'before-save-hook
+	       (lambda ()
+		 (when buffer-file-name
+		   (let ((dir (file-name-directory buffer-file-name)))
+		     (when (and (not (file-exists-p dir))
+				(y-or-n-p (format "Directory %s does not exist. Create it?" dir)))
+		       (make-directory dir t))))))
+
+   #+end_src
+
+*** Apply changes to higlighted region
+
+   #+begin_src emacs-lisp
+
+     (transient-mark-mode t)
+
+   #+end_src
+
+*** Overwrite selected text
+
+   #+begin_src emacs-lisp
+
+     (delete-selection-mode t)
+
+   #+end_src
+
+*** Refresh buffers when files change
+
+   #+begin_src emacs-lisp
+
+     (global-auto-revert-mode t)
+
+   #+end_src
+
+*** Yank to point on mouse click
+
+   #+begin_src emacs-lisp
+
+     (setq mouse-yank-at-point t)
+
+   #+end_src
+
+*** Ensure files end with newline
+
+   #+begin_src emacs-lisp
+
+     (setq require-final-newline t)
+
+   #+end_src
+
+*** Shorten yes or no
+
+   #+begin_src emacs-lisp
+
+     (fset 'yes-or-no-p 'y-or-n-p)
+
+   #+end_src
+
+*** Confirm closing Emacs
+
+   #+begin_src emacs-lisp
+
+     (setq confirm-kill-emacs 'y-or-n-p)
+
+   #+end_src
+
+*** Bind keys to change text size
+
+   #+begin_src emacs-lisp
+
+     (define-key global-map (kbd "C-+") 'text-scale-increase)
+     (define-key global-map (kbd "C-=") 'text-scale-increase)
+     (define-key global-map (kbd "C-_") 'text-scale-decrease)
+     (define-key global-map (kbd "C--") 'text-scale-decrease)
+
+   #+end_src
+
 ** Theme
 
    #+begin_src emacs-lisp
