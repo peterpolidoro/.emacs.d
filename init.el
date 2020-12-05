@@ -365,7 +365,9 @@
 
 (use-package expand-region
 	:bind (("M-[" . er/expand-region)
-				 ("C-(" . er/mark-outside-pairs)))
+				 ("M-]" . er/contract-region)
+				 ("C-(" . er/mark-outside-pairs)
+				 ("C-)" . er/mark-inside-pairs)))
 
 (use-package dired
 	:ensure nil
