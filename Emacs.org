@@ -16,6 +16,36 @@
 
   #+end_src
 
+* Setup
+  
+** Who am I?
+
+   #+begin_src emacs-lisp
+
+		 (setq user-full-name "Peter Polidoro"
+					 user-mail-address "peterpolidoro@gmail.com")
+
+   #+end_src
+
+** Font Size
+
+   #+begin_src emacs-lisp
+
+		 ;; Adjust this font size for each system
+		 (defvar pjp/default-font-size 120)
+		 (defvar pjp/default-variable-font-size 120)
+
+   #+end_src
+
+** Frame transparency
+
+   #+begin_src emacs-lisp
+
+		 ;; Make frame transparency overridable
+		 (defvar pjp/frame-transparency '(95 . 95))
+
+   #+end_src
+
 * Startup Performance
 
   Make startup faster by reducing the frequency of garbage collection and then
@@ -133,15 +163,6 @@
 
 ** User Interface
 
-*** Who am I?
-
-    #+begin_src emacs-lisp
-
-			(setq user-full-name "Peter Polidoro"
-						user-mail-address "peterpolidoro@gmail.com")
-
-    #+end_src
-
 *** Clean up Emacs' user interface, make it more minimal.
 
     #+begin_src emacs-lisp
@@ -176,8 +197,8 @@
 
     #+begin_src emacs-lisp
 
-			(set-frame-parameter (selected-frame) 'alpha '(95 . 95))
-			(add-to-list 'default-frame-alist '(alpha . (95 . 95)))
+			(set-frame-parameter (selected-frame) 'alpha pjp/frame-transparency)
+			(add-to-list 'default-frame-alist `(alpha . ,pjp/frame-transparency))
 			(set-frame-parameter (selected-frame) 'fullscreen 'maximized)
 			(add-to-list 'default-frame-alist '(fullscreen . maximized))
 
@@ -195,8 +216,12 @@
 											conf-mode-hook))
 				(add-hook mode (lambda () (display-line-numbers-mode 1))))
 
-			;; Override some modes which derive from the above
-			(dolist (mode '(org-mode-hook))
+			;; Disable line numbers for some modes
+			(dolist (mode '(org-mode-hook
+											term-mode-hook
+											shell-mode-hook
+											treemacs-mode-hook
+											eshell-mode-hook))
 				(add-hook mode (lambda () (display-line-numbers-mode 0))))
 
     #+end_src
@@ -426,10 +451,6 @@
 
     #+begin_src emacs-lisp
 
-			;; You will most likely need to adjust this font size for your system!
-			(defvar pjp/default-font-size 120)
-			(defvar pjp/default-variable-font-size 120)
-
 			(set-face-attribute 'default nil :font "Fira Code Retina" :height pjp/default-font-size)
 
 			;; Set the fixed pitch face
@@ -592,121 +613,149 @@
 
    #+end_src
 
-* Stateful Keymaps with Hydra
+** Stateful Keymaps with Hydra
 
-  #+begin_src emacs-lisp
+   #+begin_src emacs-lisp
 
-		(use-package hydra
-			:defer 1)
+		 (use-package hydra
+			 :defer 1)
 
-  #+end_src
+   #+end_src
 
-* Better Completions with Ivy
+** Better Completions with Ivy
 
-  I currently use Ivy, Counsel, and Swiper to navigate around files, buffers,
-  and projects super quickly.
+   I currently use Ivy, Counsel, and Swiper to navigate around files, buffers,
+   and projects super quickly.
 
-  #+begin_src emacs-lisp
+   #+begin_src emacs-lisp
 
-		(use-package ivy
-			:diminish
-			:bind (("C-s" . swiper))
-			:init
-			(ivy-mode 1)
-			:config
-			(setq ivy-use-virtual-buffers t)
-			(setq ivy-wrap t)
-			(setq ivy-count-format "(%d/%d) ")
-			(setq enable-recursive-minibuffers t)
+		 (use-package ivy
+			 :diminish
+			 :bind (("C-s" . swiper))
+			 :init
+			 (ivy-mode 1)
+			 :config
+			 (setq ivy-use-virtual-buffers t)
+			 (setq ivy-wrap t)
+			 (setq ivy-count-format "(%d/%d) ")
+			 (setq enable-recursive-minibuffers t)
 
-			;; Use different regex strategies per completion command
-			(push '(completion-at-point . ivy--regex-fuzzy) ivy-re-builders-alist) ;; This doesn't seem to work...
-			(push '(swiper . ivy--regex-ignore-order) ivy-re-builders-alist)
-			(push '(counsel-M-x . ivy--regex-ignore-order) ivy-re-builders-alist)
+			 ;; Use different regex strategies per completion command
+			 (push '(completion-at-point . ivy--regex-fuzzy) ivy-re-builders-alist) ;; This doesn't seem to work...
+			 (push '(swiper . ivy--regex-ignore-order) ivy-re-builders-alist)
+			 (push '(counsel-M-x . ivy--regex-ignore-order) ivy-re-builders-alist)
 
-			;; Set minibuffer height for different commands
-			(setf (alist-get 'counsel-projectile-ag ivy-height-alist) 15)
-			(setf (alist-get 'counsel-projectile-rg ivy-height-alist) 15)
-			(setf (alist-get 'swiper ivy-height-alist) 15)
-			(setf (alist-get 'counsel-switch-buffer ivy-height-alist) 7))
+			 ;; Set minibuffer height for different commands
+			 (setf (alist-get 'counsel-projectile-ag ivy-height-alist) 15)
+			 (setf (alist-get 'counsel-projectile-rg ivy-height-alist) 15)
+			 (setf (alist-get 'swiper ivy-height-alist) 15)
+			 (setf (alist-get 'counsel-switch-buffer ivy-height-alist) 7))
 
-		(use-package ivy-hydra
-			:defer t
-			:after hydra)
+		 (use-package ivy-hydra
+			 :defer t
+			 :after hydra)
 
-		(use-package ivy-rich
-			:init
-			(ivy-rich-mode 1)
-			:config
-			(setq ivy-format-function #'ivy-format-function-line))
+		 (use-package ivy-rich
+			 :init
+			 (ivy-rich-mode 1)
+			 :config
+			 (setq ivy-format-function #'ivy-format-function-line))
 
-		(use-package counsel
-			:bind (("M-x" . counsel-M-x)
-						 ("C-x b" . counsel-ibuffer)
-						 ("C-x C-f" . counsel-find-file)
-						 ("C-M-l" . counsel-imenu)
-						 :map minibuffer-local-map
-						 ("C-r" . 'counsel-minibuffer-history))
-			:custom
-			(counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
-			:config
-			(setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
+		 (use-package counsel
+			 :bind (("M-x" . counsel-M-x)
+							("C-x b" . counsel-ibuffer)
+							("C-x C-f" . counsel-find-file)
+							("C-M-l" . counsel-imenu)
+							([remap describe-function] . counsel-describe-function)
+							([remap describe-variable] . counsel-describe-variable)
+							:map minibuffer-local-map
+							("C-r" . 'counsel-minibuffer-history))
+			 :custom
+			 (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
+			 :config
+			 (setq ivy-initial-inputs-alist nil) ;; Don't start searches with ^
+			 (counsel-mode 1))
 
-		(use-package flx  ;; Improves sorting for fuzzy-matched results
-			:defer t
-			:init
-			(setq ivy-flx-limit 10000))
+		 (use-package flx  ;; Improves sorting for fuzzy-matched results
+			 :defer t
+			 :init
+			 (setq ivy-flx-limit 10000))
 
-		(use-package smex ;; Adds M-x recent command sorting for counsel-M-x
-			:defer 1
-			:after counsel)
+		 (use-package smex ;; Adds M-x recent command sorting for counsel-M-x
+			 :defer 1
+			 :after counsel)
 
-		(use-package wgrep)
+		 (use-package wgrep)
 
-		(use-package ivy-posframe
-			:custom
-			(ivy-posframe-width      115)
-			(ivy-posframe-min-width  115)
-			(ivy-posframe-height     10)
-			(ivy-posframe-min-height 10)
-			:config
-			(setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
-			(setq ivy-posframe-parameters '((parent-frame . nil)
-																			(left-fringe . 8)
-																			(right-fringe . 8)))
-			(ivy-posframe-mode 1))
+		 (use-package ivy-posframe
+			 :custom
+			 (ivy-posframe-width      115)
+			 (ivy-posframe-min-width  115)
+			 (ivy-posframe-height     10)
+			 (ivy-posframe-min-height 10)
+			 :config
+			 (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
+			 (setq ivy-posframe-parameters '((parent-frame . nil)
+																			 (left-fringe . 8)
+																			 (right-fringe . 8)))
+			 (ivy-posframe-mode 1))
 
-  #+end_src
+   #+end_src
 
-* Jumping with Avy
+** Helpful Help Commands
 
-  #+begin_src emacs-lisp
+	 [[https://github.com/Wilfred/helpful][Helpful]] adds a lot of very helpful (get it?) information to Emacs'
+	 =describe-= command buffers. For example, if you use =describe-function=, you
+	 will not only get the documentation about the function, you will also see the
+	 source code of the function and where it gets used in other places in the
+	 Emacs configuration. It is very useful for figuring out how things work in
+	 Emacs.
+	 
+	 #+begin_src emacs-lisp
 
-		(use-package avy
-			:commands (avy-goto-char avy-goto-word-0 avy-goto-line))
+		 (use-package helpful
+			 :custom
+			 (counsel-describe-function-function #'helpful-callable)
+			 (counsel-describe-variable-function #'helpful-variable)
+			 :bind
+			 ([remap describe-function] . counsel-describe-function)
+			 ([remap describe-command] . helpful-command)
+			 ([remap describe-variable] . counsel-describe-variable)
+			 ([remap describe-key] . helpful-key)
+			 ("C-." . helpful-at-point)
+			 ("C-h c". helpful-command))
 
-		(use-package avy
-			:bind (("C-:" . avy-goto-char)
-						 ("C-;" . avy-goto-char-2)
-						 ("M-g f" . avy-goto-line)
-						 ("M-g w" . avy-goto-word-1)
-						 ("M-g e" . avy-goto-word-0)))
+	 #+end_src
 
-  #+end_src
+** Jumping with Avy
 
-* Expand Region
+   #+begin_src emacs-lisp
 
-  This module is absolutely necessary for working inside of Emacs Lisp files,
-  especially when trying to some parent of an expression (like a =setq=).  Makes
-  tweaking Org agenda views much less annoying.
+		 (use-package avy
+			 :commands (avy-goto-char avy-goto-word-0 avy-goto-line))
 
-  #+begin_src emacs-lisp
+		 (use-package avy
+			 :bind (("C-:" . avy-goto-char)
+							("C-;" . avy-goto-char-2)
+							("M-g f" . avy-goto-line)
+							("M-g w" . avy-goto-word-1)
+							("M-g e" . avy-goto-word-0)))
 
-		(use-package expand-region
-			:bind (("M-[" . er/expand-region)
-						 ("C-(" . er/mark-outside-pairs)))
+   #+end_src
 
-  #+end_src
+** Expand Region
+
+   This module is absolutely necessary for working inside of Emacs Lisp files,
+   especially when trying to some parent of an expression (like a =setq=).  Makes
+   tweaking Org agenda views much less annoying.
+
+   #+begin_src emacs-lisp
+
+		 (use-package expand-region
+			 :bind (("M-[" . er/expand-region)
+							("C-(" . er/mark-outside-pairs)))
+
+   #+end_src
 
 * File Browsing
 
@@ -728,6 +777,11 @@
 
 			 (use-package all-the-icons-dired
 				 :hook (dired-mode . all-the-icons-dired-mode)))
+
+		 (use-package dired-hide-dotfiles
+			 :hook (dired-mode . dired-hide-dotfiles-mode)
+			 :bind (:map dired-mode-map
+									 ("." . dired-hide-dotfiles-mode)))
 
    #+end_src
 
@@ -768,8 +822,7 @@
 		;; Turn on indentation and auto-fill mode for Org files
 		(defun pjp/org-mode-setup ()
 			(variable-pitch-mode 1)
-			(auto-fill-mode 0)
-			(visual-line-mode 1))
+			(auto-fill-mode 0))
 
 		(use-package org
 			:defer t
@@ -1058,17 +1111,6 @@
     #+begin_src emacs-lisp
 
 			(add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
-
-			(use-package helpful
-				:ensure t
-				:custom
-				(counsel-describe-function-function #'helpful-callable)
-				(counsel-describe-variable-function #'helpful-variable)
-				:bind
-				([remap describe-function] . counsel-describe-function)
-				([remap describe-command] . helpful-command)
-				([remap describe-variable] . counsel-describe-variable)
-				([remap describe-key] . helpful-key))
 
     #+end_src
 

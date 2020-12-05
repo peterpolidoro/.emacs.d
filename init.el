@@ -1,6 +1,16 @@
 ;; NOTE: init.el is generated from Emacs.org.  Please edit that file
 ;;       in Emacs and init.el will be generated automatically!
 
+(setq user-full-name "Peter Polidoro"
+			user-mail-address "peterpolidoro@gmail.com")
+
+;; Adjust this font size for each system
+(defvar pjp/default-font-size 120)
+(defvar pjp/default-variable-font-size 120)
+
+;; Make frame transparency overridable
+(defvar pjp/frame-transparency '(95 . 95))
+
 ;; The default is 800 kilobytes.  Measured in bytes.
 (setq gc-cons-threshold (* 50 1000 1000))
 
@@ -62,9 +72,6 @@
 	:config
 	(setq which-key-idle-delay 0.3))
 
-(setq user-full-name "Peter Polidoro"
-			user-mail-address "peterpolidoro@gmail.com")
-
 ;; Thanks, but no thanks
 (setq inhibit-startup-message t)
 
@@ -83,8 +90,8 @@
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 (setq scroll-step 1)
 
-(set-frame-parameter (selected-frame) 'alpha '(95 . 95))
-(add-to-list 'default-frame-alist '(alpha . (95 . 95)))
+(set-frame-parameter (selected-frame) 'alpha pjp/frame-transparency)
+(add-to-list 'default-frame-alist `(alpha . ,pjp/frame-transparency))
 (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
@@ -96,8 +103,12 @@
 								conf-mode-hook))
 	(add-hook mode (lambda () (display-line-numbers-mode 1))))
 
-;; Override some modes which derive from the above
-(dolist (mode '(org-mode-hook))
+;; Disable line numbers for some modes
+(dolist (mode '(org-mode-hook
+								term-mode-hook
+								shell-mode-hook
+								treemacs-mode-hook
+								eshell-mode-hook))
 	(add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (setq large-file-warning-threshold nil)
@@ -179,10 +190,6 @@
 (enable-theme 'euphoria)
 (setq color-theme-is-global t)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-
-;; You will most likely need to adjust this font size for your system!
-(defvar pjp/default-font-size 120)
-(defvar pjp/default-variable-font-size 120)
 
 (set-face-attribute 'default nil :font "Fira Code Retina" :height pjp/default-font-size)
 
@@ -300,12 +307,15 @@
 				 ("C-x b" . counsel-ibuffer)
 				 ("C-x C-f" . counsel-find-file)
 				 ("C-M-l" . counsel-imenu)
+				 ([remap describe-function] . counsel-describe-function)
+				 ([remap describe-variable] . counsel-describe-variable)
 				 :map minibuffer-local-map
 				 ("C-r" . 'counsel-minibuffer-history))
 	:custom
 	(counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
 	:config
-	(setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
+	(setq ivy-initial-inputs-alist nil) ;; Don't start searches with ^
+	(counsel-mode 1))
 
 (use-package flx  ;; Improves sorting for fuzzy-matched results
 	:defer t
@@ -330,6 +340,18 @@
 																	(left-fringe . 8)
 																	(right-fringe . 8)))
 	(ivy-posframe-mode 1))
+
+(use-package helpful
+	:custom
+	(counsel-describe-function-function #'helpful-callable)
+	(counsel-describe-variable-function #'helpful-variable)
+	:bind
+	([remap describe-function] . counsel-describe-function)
+	([remap describe-command] . helpful-command)
+	([remap describe-variable] . counsel-describe-variable)
+	([remap describe-key] . helpful-key)
+	("C-." . helpful-at-point)
+	("C-h c". helpful-command))
 
 (use-package avy
 	:commands (avy-goto-char avy-goto-word-0 avy-goto-line))
@@ -360,6 +382,11 @@
 	(use-package all-the-icons-dired
 		:hook (dired-mode . all-the-icons-dired-mode)))
 
+(use-package dired-hide-dotfiles
+	:hook (dired-mode . dired-hide-dotfiles-mode)
+	:bind (:map dired-mode-map
+							("." . dired-hide-dotfiles-mode)))
+
 (use-package openwith
 	:config
 	(setq openwith-associations
@@ -385,8 +412,7 @@
 ;; Turn on indentation and auto-fill mode for Org files
 (defun pjp/org-mode-setup ()
 	(variable-pitch-mode 1)
-	(auto-fill-mode 0)
-	(visual-line-mode 1))
+	(auto-fill-mode 0))
 
 (use-package org
 	:defer t
@@ -555,17 +581,6 @@
 				 (lambda () (require 'ccls) (lsp))))
 
 (add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
-
-(use-package helpful
-	:ensure t
-	:custom
-	(counsel-describe-function-function #'helpful-callable)
-	(counsel-describe-variable-function #'helpful-variable)
-	:bind
-	([remap describe-function] . counsel-describe-function)
-	([remap describe-command] . helpful-command)
-	([remap describe-variable] . counsel-describe-variable)
-	([remap describe-key] . helpful-key))
 
 (use-package markdown-mode
 	:pin melpa-stable
