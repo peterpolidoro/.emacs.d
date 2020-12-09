@@ -150,10 +150,10 @@
 
 (setq confirm-kill-emacs 'y-or-n-p)
 
-(define-key global-map (kbd "C-+") 'text-scale-increase)
-(define-key global-map (kbd "C-=") 'text-scale-increase)
-(define-key global-map (kbd "C-_") 'text-scale-decrease)
-(define-key global-map (kbd "C--") 'text-scale-decrease)
+(defhydra hydra-zoom (global-map "C-=")
+	"zoom"
+	("=" text-scale-increase "in")
+	("-" text-scale-decrease "out"))
 
 (prefer-coding-system 'utf-8)
 (set-default-coding-systems 'utf-8)
@@ -483,12 +483,14 @@
 
 (use-package magit
 	:commands (magit-status magit-get-current-branch)
+	:diminish magit-auto-revert-mode
+	:bind (("C-x g" . magit-status))
+	:config
+	(progn
+		(setq magit-completing-read-function 'ivy-completing-read)
+		(setq magit-item-highlight-face 'bold))
 	:custom
 	(magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
-
-;; Add a super-convenient global binding for magit-status since
-;; I use it 8 million times a day
-(global-set-key (kbd "C-M-;") 'magit-status)
 
 (use-package forge
 	:disabled)
@@ -584,6 +586,21 @@
 
 (add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
 
+(use-package paredit
+	:ensure t
+	:config
+	(add-hook 'emacs-lisp-mode-hook #'paredit-mode)
+	;; enable in the *scratch* buffer
+	(add-hook 'lisp-interaction-mode-hook #'paredit-mode)
+	(add-hook 'ielm-mode-hook #'paredit-mode)
+	(add-hook 'lisp-mode-hook #'paredit-mode)
+	(add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
+
+(use-package ielm
+	:config
+	(add-hook 'ielm-mode-hook #'eldoc-mode)
+	(add-hook 'ielm-mode-hook #'rainbow-delimiters-mode))
+
 (use-package markdown-mode
 	:pin melpa-stable
 	:mode "\\.md\\'"
@@ -642,3 +659,49 @@
 				 web-mode
 				 typescript-mode
 				 js2-mode))
+
+(use-package term
+	:config
+	(setq explicit-shell-file-name "bash") ;; Change this to zsh, etc
+	;;(setq explicit-zsh-args '())         ;; Use 'explicit-<shell>-args for shell-specific args
+
+	;; Match the default Bash shell prompt.  Update this if you have a custom prompt
+	(setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
+
+(use-package eterm-256color
+	:hook (term-mode . eterm-256color-mode))
+
+(use-package vterm
+	:commands vterm
+	:config
+	(setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *")  ;; Set this to match your custom shell prompt
+	;;(setq vterm-shell "zsh")                       ;; Set this to customize the shell to launch
+	(setq vterm-max-scrollback 10000))
+
+(when (eq system-type 'windows-nt)
+	(setq explicit-shell-file-name "powershell.exe")
+	(setq explicit-powershell.exe-args '()))
+
+(defun pjp/configure-eshell ()
+	;; Save command history when commands are entered
+	(add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+
+	;; Truncate buffer for performance
+	(add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+
+	(setq eshell-history-size         10000
+				eshell-buffer-maximum-lines 10000
+				eshell-hist-ignoredups t
+				eshell-scroll-to-bottom-on-input t))
+
+(use-package eshell-git-prompt)
+
+(use-package eshell
+	:hook (eshell-first-time-mode . pjp/configure-eshell)
+	:config
+
+	(with-eval-after-load 'esh-opt
+		(setq eshell-destroy-buffer-when-process-dies t)
+		(setq eshell-visual-commands '("htop")))
+
+	(eshell-git-prompt-use-theme 'powerline))

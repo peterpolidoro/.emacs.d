@@ -52,6 +52,17 @@
 
     #+END_SRC
 
+*** terminal setup
+
+**** vterm
+
+     #+BEGIN_SRC sh
+
+			 sudo apt install libvterm-dev
+			 cat vterm.sh >> ~/.bashrc
+
+     #+END_SRC
+
 ** Mac OS
 
 *** emacs
