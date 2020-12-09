@@ -63,6 +63,17 @@
 
      #+END_SRC
 
+*** Language Server Protocol
+
+**** Python
+
+		 #+begin_src sh
+
+			 sudo apt install python3-pip
+			 pip install --user "python-language-server[all]"
+
+		 #+end_src
+
 ** Mac OS
 
 *** emacs
