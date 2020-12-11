@@ -699,6 +699,13 @@
 (use-package yaml-mode
 	:mode "\\.ya?ml\\'")
 
+(use-package matlab
+	:ensure matlab-mode
+	:mode "\\.m\\'"
+	:config
+	(setq matlab-indent-function t)
+	(setq matlab-shell-command "matlab"))
+
 (use-package flycheck
 	:defer t
 	:hook (lsp-mode . flycheck-mode))

@@ -1379,6 +1379,19 @@
 
     #+end_src
 
+*** Matlab
+
+    #+begin_src emacs-lisp
+
+			(use-package matlab
+				:ensure matlab-mode
+				:mode "\\.m\\'"
+				:config
+				(setq matlab-indent-function t)
+				(setq matlab-shell-command "matlab"))
+
+    #+end_src
+
 ** Productivity
 
 *** Syntax checking with Flycheck

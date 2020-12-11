@@ -74,6 +74,18 @@
 
 		 #+end_src
 
+*** Emacs Application Framework
+
+		#+begin_src sh
+
+			sudo apt install \
+					 python3-pyqt5 \
+					 python3-pyqt5.sip \
+					 python3-dbus \
+					 python3-pyqt5.qtwebengine \
+
+		#+end_src
+
 ** Mac OS
 
 *** emacs
