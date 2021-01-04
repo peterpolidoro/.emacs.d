@@ -467,7 +467,7 @@
 (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
 (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
 (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch))
+(set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
 
 ;; This is needed as of Org 9.2
 (require 'org-tempo)
